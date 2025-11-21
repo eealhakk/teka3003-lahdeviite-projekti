@@ -14,11 +14,15 @@ Ohjelma toimii työkaluna lähdeviiteiden ylläpitoon.
 
 *tba*
 
-## Baclogit :scroll:
+### Definition of Done (DoD) :clipboard:
+
+*tba*
+
+### Backlogit :scroll:
 
 Structured Backlog:
 [Backlog](https://docs.google.com/spreadsheets/d/1w9sQrWzVo_Mp1rqMd59idqjkgLkYJTVRdnaeHLzts-E/edit?usp=sharing)
 
-## Lisenssi :balance_scale:
+### Lisenssi :balance_scale:
 
 [Projektin lisenssi GPLv3](LICENCE)
