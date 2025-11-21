@@ -14,6 +14,8 @@ Ohjelma toimii työkaluna lähdeviiteiden ylläpitoon.
 
 *tba*
 
+## Misc
+
 ### Definition of Done (DoD) :clipboard:
 
 *tba*
