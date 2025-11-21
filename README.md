@@ -1,4 +1,5 @@
 # teka3003-lahdeviite-projekti
+[![CI](https://github.com/eealhakk/teka3003-lahdeviite-projekti/actions/workflows/main.yml/badge.svg)](https://github.com/eealhakk/teka3003-lahdeviite-projekti/actions/workflows/main.yml)
 Ohjelmistotuotanto kurssin miniprojekti
 
 Structured Backlog:
