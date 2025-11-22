@@ -27,7 +27,7 @@ Ohjelma toimii työkaluna lähdeviiteiden ylläpitoon.
 ### Backlogit :scroll:
 
 Structured Backlog:
-[Backlog](https://docs.google.com/spreadsheets/d/1w9sQrWzVo_Mp1rqMd59idqjkgLkYJTVRdnaeHLzts-E/edit?usp=sharing)
+[Backlog](https://docs.google.com/spreadsheets/d/1_f_kWetOpuByERxlkkLHWk1XyCgWasOjDDc2oQxp2GU/edit?gid=742115234#gid=742115234)
 
 ### Lisenssi :balance_scale:
 
