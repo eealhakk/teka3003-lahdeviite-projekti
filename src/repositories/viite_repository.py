@@ -42,11 +42,11 @@ class Reference_manager:
     def add_book(self, key, author, title, year, publisher):
         return self.add_reference(Book(key, author, title, year, publisher))
     
-    def add_article():
-        return None
+    def add_article(self, key, author, title, journal, year, booktitle):
+        return self.add_reference(Article(key, author, title, journal, year, booktitle))
     
-    def add_inproceeding():
-        return None
+    def add_inproceeding(self, key, author, title, year, booktitle):
+        return self.add_reference(Inproceeding(key, author, title, year, booktitle))
 
     def add_reference(self, ref):
         if ref:

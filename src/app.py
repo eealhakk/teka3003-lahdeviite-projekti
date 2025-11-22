@@ -3,7 +3,6 @@ from repositories.viite_repository import Reference_manager
 class App:
     def __init__(self, io):
         self.io = io
-
         self.reference_manager = Reference_manager()
 
     def run(self):
@@ -14,28 +13,61 @@ class App:
 2) Listaa kaikki viitteet
 3) Vie BibTeX-tiedosto
 4) Lopeta
-""") 
+""")
             choice = self.io.read("Valinta: ").strip()
-            if choice == "1":
-                print("lisää(kirja)")
-                #Lisää vain kirjan
-                try:
-                    key = self.io.read("Lisää key(String): ").strip()
-                    author = self.io.read("Lisää author(String): ").strip()
-                    title = self.io.read("Lisää title(String): ").strip()
-                    year = self.io.read("Lisää year(Int): ").strip()
-                    publisher = self.io.read("Lisää publisher(String): ").strip()
-                    self.reference_manager.add_book(key, author, title, year, publisher)
-                    print("Lisäys onnistunut")
-                except Exception as error:
-                    self.io.write(str(error)) #TODO: Ei todennäköisesti toimi?
 
+            if choice == "1":
+                self.add_reference()
             elif choice == "2":
-                print("listaa")
                 self.reference_manager.listaa()
             elif choice == "3":
-                print("bibtex")
+                self.reference_manager.export_bibtex()
             elif choice == "4":
                 break
             else:
                 self.io.write("Virheellinen valinta")
+
+    def add_reference(self):
+        print("Valitse viitetyyppi:")
+        print("1) Inproceedings")
+        print("2) Article")
+        print("3) Book")
+
+        type_choice = self.io.read("Tyyppi: ").strip()
+
+        if type_choice == "1":
+            ref_type = "inproceedings"
+        elif type_choice == "2":
+            ref_type = "article"
+        elif type_choice == "3":
+            ref_type = "book"
+        else:
+            self.io.write("Virheellinen valinta")
+            return
+
+        key = self.io.read("BibTeX-avain: ").strip()
+
+        if ref_type == "inproceedings":
+            author = self.io.read("Author: ").strip()
+            title = self.io.read("Title: ").strip()
+            year = self.io.read("Year: ").strip()
+            booktitle = self.io.read("Booktitle: ").strip()
+            self.reference_manager.add_inproceeding(key, author, title, year, booktitle)
+
+        elif ref_type == "article":
+            author = self.io.read("Author: ").strip()
+            title = self.io.read("Title: ").strip()
+            journal = self.io.read("Journal: ").strip()
+            year = self.io.read("Year: ").strip()
+            volume = self.io.read("Volume: ").strip()
+            pages = self.io.read("Pages: ").strip()
+            self.reference_manager.add_article(key, author, title, journal, year, volume, pages)
+
+        elif ref_type == "book":
+            author = self.io.read("Author: ").strip()
+            title = self.io.read("Title: ").strip()
+            year = self.io.read("Year: ").strip()
+            publisher = self.io.read("Publisher: ").strip()
+            self.reference_manager.add_book(key, author, title, year, publisher)
+
+        self.io.write(f"{ref_type}-viite lisätty!")
