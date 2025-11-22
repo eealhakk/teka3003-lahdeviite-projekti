@@ -18,7 +18,11 @@ Ohjelma toimii työkaluna lähdeviiteiden ylläpitoon.
 
 ### Definition of Done (DoD) :clipboard:
 
-*tba*
+- Kattava dokumentointi
+
+- Koodin katselmointi
+
+- Testien läpäisy
 
 ### Backlogit :scroll:
 
