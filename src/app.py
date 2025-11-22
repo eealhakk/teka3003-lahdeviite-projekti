@@ -1,9 +1,9 @@
-from repositories.viite_repository import Reference_manager
+from repositories.viite_repository import ReferenceManager
 
 class App:
     def __init__(self, io):
         self.io = io
-        self.reference_manager = Reference_manager()
+        self.reference_manager = ReferenceManager()
 
     def run(self):
         while True:

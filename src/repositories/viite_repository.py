@@ -29,7 +29,8 @@ Martin09 = Book(
 
 entries = [VPL11, CBH91, Martin09]
 
-class Database_manager:
+
+class DatabaseManager:
     def __init__(self, db_name="references.db"):
         self.db_name = db_name
         self.create_database()
@@ -153,9 +154,9 @@ class Database_manager:
         return rows
     
 
-class Reference_manager:
+class ReferenceManager:
     def __init__(self):
-        self.db_manager = Database_manager()
+        self.db_manager = DatabaseManager()
 
     def listaa(self):
         inproceedings = self.db_manager.get_inproceedings()
@@ -182,4 +183,3 @@ class Reference_manager:
     
     def add_inproceeding(self, key, author, title, year, booktitle):
         return self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle))
-
