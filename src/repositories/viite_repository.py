@@ -34,6 +34,12 @@ class Database_manager:
         self.db_name = db_name
         self.create_database()
 
+        #testidata
+        if self.connect().execute("SELECT COUNT(*) FROM inproceeding;").fetchone()[0] == 0:
+            self.insert_inproceeding(VPL11)
+            self.insert_article(CBH91)
+            self.insert_book(Martin09)
+
     def connect(self):
         return sqlite3.connect(self.db_name)
 
@@ -80,7 +86,8 @@ class Database_manager:
         """)
         connection.commit()
         connection.close()
-    
+
+    # lisäykset tietokantaan
     def insert_inproceeding(self, inproceeding):
         connection = self.connect()
         cursor = connection.cursor()
@@ -111,34 +118,68 @@ class Database_manager:
         connection.commit()
         connection.close()
 
+    # haut tietokannasta
+    def get_inproceedings(self, key=None):
+        connection = self.connect()
+        cursor = connection.cursor()
+        if key:
+            cursor.execute("SELECT * FROM inproceeding WHERE key = ?;", (key,))
+        else:
+            cursor.execute("SELECT * FROM inproceeding;")
+        rows = cursor.fetchall()
+        connection.close()
+        return rows
+    
+    def get_articles(self, key=None):
+        connection = self.connect()
+        cursor = connection.cursor()
+        if key:
+            cursor.execute("SELECT * FROM article WHERE key = ?;", (key,))
+        else:
+            cursor.execute("SELECT * FROM article;")
+        rows = cursor.fetchall()
+        connection.close()
+        return rows
+    
+    def get_books(self, key=None):
+        connection = self.connect()
+        cursor = connection.cursor()
+        if key:
+            cursor.execute("SELECT * FROM book WHERE key = ?;", (key,))
+        else:
+            cursor.execute("SELECT * FROM book;")
+        rows = cursor.fetchall()
+        connection.close()
+        return rows
+    
 
 class Reference_manager:
-    def __init__(self, references=None):
-        if references is None:
-            references = entries.copy() #[] testi data
-        self.references = references
+    def __init__(self):
+        self.db_manager = Database_manager()
 
     def listaa(self):
-        for index, ref in enumerate(self.references, start=1):
-            print(f"{index}) avain: {ref.key}\nauthor: {ref.author}\n")
+        inproceedings = self.db_manager.get_inproceedings()
+        articles = self.db_manager.get_articles()
+        books = self.db_manager.get_books()
+
+        print("Inproceedings:")
+        for row in inproceedings:
+            print(row)
+
+        print("\nArticles:")
+        for row in articles:
+            print(row)
+
+        print("\nBooks:")
+        for row in books:
+            print(row)
 
     def add_book(self, key, author, title, year, publisher):
-        return self.add_reference(Book(key, author, title, year, publisher))
+        return self.db_manager.insert_book(Book(key, author, title, year, publisher))
     
-    def add_article(self, key, author, title, journal, year, booktitle):
-        return self.add_reference(Article(key, author, title, journal, year, booktitle))
+    def add_article(self, key, author, title, journal, year, volume, pages):
+        return self.db_manager.insert_article(Article(key, author, title, journal, year, volume, pages))
     
     def add_inproceeding(self, key, author, title, year, booktitle):
-        return self.add_reference(Inproceeding(key, author, title, year, booktitle))
+        return self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle))
 
-    def add_reference(self, ref):
-        if ref:
-            self.references.append(ref)
-
-
-def main():
-    reference = Reference_manager()
-    print(reference)
-
-if __name__ == "__main__":
-    main()
