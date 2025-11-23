@@ -1,6 +1,8 @@
+"""Console_io testit"""
 from console_io import ConsoleIO
 
 def test_console_io_write(capsys):
+    """Testaa että write-metodi tulostaa odotetun tekstin"""
     io = ConsoleIO()
 
     io.write("Hei maailma!")
