@@ -6,13 +6,13 @@
 
 Ohjelma toimii työkaluna lähdeviiteiden ylläpitoon.
 
-## Asennus :hammer_and_wrench:
+## Asennus ja käyttö :hammer_and_wrench: :blue_book:
 
-*tba*
-
-## Käyttöohjeet :blue_book:
-
-*tba*
+### Windows
+1. Lataa ohjelman uusin versio: [Releases](https://github.com/eealhakk/teka3003-lahdeviite-projekti/releases)
+2. Laita .exe-tiedosto haluamaasi kansioon
+3. Aja ohjelma
+4. Seuraa sovelluksen sisäisiä ohjeita
 
 ## Misc
 
