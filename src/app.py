@@ -7,13 +7,12 @@ class App:
 
     def run(self):
         while True:
-            print("""
-=== OTSIKKO ===
-1) Lisää uusi viite
-2) Listaa kaikki viitteet
-3) Vie BibTeX-tiedosto
-4) Lopeta
-""")
+            self.io.write("\n=== Valiste toiminto ===")
+            self.io.write("1) Lisää uusi viite")
+            self.io.write("2) Listaa kaikki viitteet")
+            self.io.write("3) Vie BibTeX-tiedosto")
+            self.io.write("4) Lopeta\n")
+
             choice = self.io.read("Valinta: ").strip()
 
             if choice == "1":
@@ -28,10 +27,10 @@ class App:
                 self.io.write("Virheellinen valinta")
 
     def add_reference(self):
-        print("Valitse viitetyyppi:")
-        print("1) Inproceedings")
-        print("2) Article")
-        print("3) Book")
+        self.io.write("\n=== Valitse viitetyyppi ===")
+        self.io.write("1) Inproceedings")
+        self.io.write("2) Article")
+        self.io.write("3) Book\n")
 
         type_choice = self.io.read("Tyyppi: ").strip()
 
