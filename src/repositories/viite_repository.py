@@ -153,6 +153,21 @@ class DatabaseManager:
         connection.close()
         return rows
     
+    # muokkaus tietokannassa
+    def edit_entry(self, entry_type, target_key, **kwargs):
+        connection = self.connect()
+        cursor = connection.cursor()
+
+        fields = ', '.join([f"{k} = ?" for k in kwargs.keys()])
+        values = list(kwargs.values())
+        values.append(target_key)
+
+        query = f"UPDATE {entry_type} SET {fields} WHERE key = ?;"
+        cursor.execute(query, values)
+
+        connection.commit()
+        connection.close()
+    
 
 class ReferenceManager:
     def __init__(self):
@@ -174,12 +189,25 @@ class ReferenceManager:
         print("\nBooks:")
         for row in books:
             print(row)
+    
+    def entry_info(self, entry_type, target_key):
+        if entry_type == "inproceeding":
+            return Inproceeding(*self.db_manager.get_inproceedings(target_key)[0][1:])
+        elif entry_type == "article":
+            return Article(*self.db_manager.get_articles(target_key)[0][1:])
+        elif entry_type == "book":
+            return Book(*self.db_manager.get_books(target_key)[0][1:])
+        else:
+            return None
+    
+    def edit_entry(self, entry_type, target_key, **kwargs):
+        self.db_manager.edit_entry(entry_type, target_key, **kwargs)
 
     def add_book(self, key, author, title, year, publisher):
-        return self.db_manager.insert_book(Book(key, author, title, year, publisher))
+        self.db_manager.insert_book(Book(key, author, title, year, publisher))
     
     def add_article(self, key, author, title, journal, year, volume, pages):
-        return self.db_manager.insert_article(Article(key, author, title, journal, year, volume, pages))
+        self.db_manager.insert_article(Article(key, author, title, journal, year, volume, pages))
     
     def add_inproceeding(self, key, author, title, year, booktitle):
-        return self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle))
+        self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle))

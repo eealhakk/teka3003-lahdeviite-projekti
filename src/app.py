@@ -11,7 +11,8 @@ class App:
             self.io.write("1) Lisää uusi viite")
             self.io.write("2) Listaa kaikki viitteet")
             self.io.write("3) Vie BibTeX-tiedosto")
-            self.io.write("4) Lopeta\n")
+            self.io.write("4) Muokkaa viitettä")
+            self.io.write("5) Lopeta\n")
 
             choice = self.io.read("Valinta: ").strip()
 
@@ -22,31 +23,44 @@ class App:
             elif choice == "3":
                 self.reference_manager.export_bibtex()
             elif choice == "4":
+                self.edit_reference()
+            elif choice == "5":
                 break
             else:
                 self.io.write("Virheellinen valinta")
 
+    def edit_reference(self):
+        type = self.ask_type()
+        if not type:
+            return
+        
+        key_editing = self.io.read("Anna muokattavan viitteen BibTeX-avain: ").strip()
+        muokattava = self.reference_manager.entry_info(type, str(key_editing))
+        
+        if not muokattava:
+            self.io.write("Viitettä ei löydy.")
+            return
+        self.io.write("\n"+str(muokattava)+"\n")
+
+        fields = self.io.read("Anna kentät, joita haluat muokata erotettuna pilkulla: ").strip()
+
+        new_values = {}
+        for field in fields.split(","):
+            field = field.strip()
+            new_value = self.io.read(f"Anna uusi arvo kentälle '{field}': ").strip()
+            new_values[field] = new_value
+            
+        self.reference_manager.edit_entry(type, key_editing, **new_values)
+        self.io.write("Viite päivitetty!")
+
     def add_reference(self):
-        self.io.write("\n=== Valitse viitetyyppi ===")
-        self.io.write("1) Inproceedings")
-        self.io.write("2) Article")
-        self.io.write("3) Book\n")
-
-        type_choice = self.io.read("Tyyppi: ").strip()
-
-        if type_choice == "1":
-            ref_type = "inproceedings"
-        elif type_choice == "2":
-            ref_type = "article"
-        elif type_choice == "3":
-            ref_type = "book"
-        else:
-            self.io.write("Virheellinen valinta")
+        ref_type = self.ask_type()
+        if not ref_type:
             return
 
         key = self.io.read("BibTeX-avain: ").strip()
 
-        if ref_type == "inproceedings":
+        if ref_type == "inproceeding":
             author = self.io.read("Author: ").strip()
             title = self.io.read("Title: ").strip()
             year = self.io.read("Year: ").strip()
@@ -70,3 +84,21 @@ class App:
             self.reference_manager.add_book(key, author, title, year, publisher)
 
         self.io.write(f"{ref_type}-viite lisätty!")
+    
+    def ask_type(self):
+        self.io.write("\n=== Valitse viitetyyppi ===")
+        self.io.write("1) Inproceedings")
+        self.io.write("2) Article")
+        self.io.write("3) Book\n")
+
+        type_choice = self.io.read("Tyyppi: ").strip()
+
+        if type_choice == "1":
+            return "inproceeding"
+        elif type_choice == "2":
+            return "article"
+        elif type_choice == "3":
+            return "book"
+        else:
+            self.io.write("Virheellinen valinta")
+            return None
