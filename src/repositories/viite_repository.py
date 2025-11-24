@@ -192,11 +192,20 @@ class ReferenceManager:
     
     def entry_info(self, entry_type, target_key):
         if entry_type == "inproceeding":
-            return Inproceeding(*self.db_manager.get_inproceedings(target_key)[0][1:])
+            rows = self.db_manager.get_inproceedings(target_key)
+            if not rows:
+                return None
+            return Inproceeding(*rows[0][1:])
         elif entry_type == "article":
-            return Article(*self.db_manager.get_articles(target_key)[0][1:])
+            rows = self.db_manager.get_articles(target_key)
+            if not rows:
+                return None
+            return Article(*rows[0][1:])
         elif entry_type == "book":
-            return Book(*self.db_manager.get_books(target_key)[0][1:])
+            rows = self.db_manager.get_books(target_key)
+            if not rows:
+                return None
+            return Book(*rows[0][1:])
         else:
             return None
     
