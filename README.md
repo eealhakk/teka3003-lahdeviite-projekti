@@ -6,23 +6,24 @@
 
 Ohjelma toimii työkaluna lähdeviiteiden ylläpitoon.
 
-## Asennus :hammer_and_wrench:
+## Asennus ja käyttö :hammer_and_wrench: :blue_book:
 
-*tba*
+### Windows
+1. Lataa ohjelman uusin versio: [Releases](https://github.com/eealhakk/teka3003-lahdeviite-projekti/releases)
+2. Laita .exe-tiedosto haluamaasi kansioon
+3. Aja ohjelma
+4. Seuraa sovelluksen sisäisiä ohjeita
 
-## Käyttöohjeet :blue_book:
-
-*tba*
-
-## Misc
+## Misc :card_file_box:
 
 ### Definition of Done (DoD) :clipboard:
+_subject to change_
 
-- Kattava dokumentointi
+- **Kattava dokumentointi:** Docstringit ja kommentit koodissa, koodi helposti luettavaa niin että ulkopuolinenkin ymmärtää sen.
 
-- Koodin katselmointi
+- **Koodin katselmointi:** Tiimi käy läpi tehdyn koodin, ja etsii mahdollisia ongelmia tai parannuksen kohteita.
 
-- Testien läpäisy
+- **Testien läpäisy:** Koodia on testattu tarpeeksi, ja tehdyt testit menevät läpi.
 
 ### Backlogit :scroll:
 
