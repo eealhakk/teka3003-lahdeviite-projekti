@@ -1,7 +1,9 @@
+"""Main-moduuli ohjelman käynnistämiseen"""
 from console_io import ConsoleIO
 from app import App
 
 def main():
+    """Käynnistää ohjelman."""
     io = ConsoleIO()
     app = App(io)
     app.run()
