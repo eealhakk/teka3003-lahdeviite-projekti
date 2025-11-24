@@ -155,17 +155,6 @@ class DatabaseManager:
     
     # muokkaus tietokannassa
     def edit_entry(self, entry_type, target_key, **kwargs):
-
-        ALLOWED_FIELDS = {
-            "inproceedings": {"key", "author", "title", "year", "booktitle"},
-            "article": {"key", "author", "title", "journal", "year", "volume", "pages"},
-            "book": {"key", "author", "title", "year", "publisher"},
-        }
-
-        for field in kwargs.keys():
-            if field not in ALLOWED_FIELDS[entry_type]:
-                raise ValueError(f"Virheellinen kenttä: {field}")
-            
         connection = self.connect()
         cursor = connection.cursor()
 
