@@ -43,6 +43,13 @@ class App:
         self.io.write("\n"+str(muokattava)+"\n")
 
         fields = self.io.read("Anna kentät, joita haluat muokata erotettuna pilkulla: ").strip()
+        allowed_fields = vars(muokattava).keys()
+
+        for field in fields.split(","):
+            field = field.strip()
+            if field not in allowed_fields:
+                self.io.write(f"'{field}' ei ole sallittu.")
+                return
 
         new_values = {}
         for field in fields.split(","):
