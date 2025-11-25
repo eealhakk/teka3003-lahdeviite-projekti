@@ -1,3 +1,6 @@
+"""Tietokannan hallinta ja viitteiden käsittely."""
+
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 from entities.refobj import Article, Inproceeding, Book
 import sqlite3
 
@@ -6,7 +9,10 @@ VPL11 = Inproceeding(
     author="Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
     title="Extreme Apprenticeship Method in Teaching Programming for Beginners.",
     year=2011,
-    booktitle="SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education"
+    booktitle=(
+        "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on "
+        "Computer science education"
+    )
 )
 
 CBH91 = Article(
@@ -31,6 +37,7 @@ entries = [VPL11, CBH91, Martin09]
 
 
 class DatabaseManager:
+    """Vastaa SQLite-tietokannan hallinnasta."""
     def __init__(self, db_name="references.db"):
         self.db_name = db_name
         self.create_database()
@@ -42,9 +49,11 @@ class DatabaseManager:
             self.insert_book(Martin09)
 
     def connect(self):
+        """Yhdistää tietokantaan."""
         return sqlite3.connect(self.db_name)
 
     def create_database(self):
+        """Luo tarvittavat taulut tietokantaan, jos niitä ei ole."""
         connection = self.connect()
         cursor = connection.cursor()
 
@@ -90,26 +99,49 @@ class DatabaseManager:
 
     # lisäykset tietokantaan
     def insert_inproceeding(self, inproceeding):
+        """Lisää inproceeding tietokantaan."""
         connection = self.connect()
         cursor = connection.cursor()
-        cursor.execute("""
-        INSERT INTO inproceeding (key, author, title, year, booktitle)
-        VALUES (?, ?, ?, ?, ?);
-        """, (inproceeding.key, inproceeding.author, inproceeding.title, inproceeding.year, inproceeding.booktitle))
+        cursor.execute(
+            """
+            INSERT INTO inproceeding (key, author, title, year, booktitle)
+            VALUES (?, ?, ?, ?, ?);
+            """,
+            (
+                inproceeding.key,
+                inproceeding.author,
+                inproceeding.title,
+                inproceeding.year,
+                inproceeding.booktitle,
+            ),
+        )
         connection.commit()
         connection.close()
-    
+
     def insert_article(self, article):
+        """Lisää article tietokantaan."""
         connection = self.connect()
         cursor = connection.cursor()
-        cursor.execute("""
-        INSERT INTO article (key, author, title, journal, year, volume, pages)
-        VALUES (?, ?, ?, ?, ?, ?, ?);
-        """, (article.key, article.author, article.title, article.journal, article.year, article.volume, article.pages))
+        cursor.execute(
+            """
+            INSERT INTO article (key, author, title, journal, year, volume, pages)
+            VALUES (?, ?, ?, ?, ?, ?, ?);
+            """,
+            (
+                article.key,
+                article.author,
+                article.title,
+                article.journal,
+                article.year,
+                article.volume,
+                article.pages,
+            ),
+        )
         connection.commit()
         connection.close()
-    
+
     def insert_book(self, book):
+        """Lisää book tietokantaan."""
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute("""
@@ -121,6 +153,7 @@ class DatabaseManager:
 
     # haut tietokannasta
     def get_inproceedings(self, key=None):
+        """Hakee inproceedingin tai kaikki inproceedingit tietokannasta"""
         connection = self.connect()
         cursor = connection.cursor()
         if key:
@@ -130,8 +163,9 @@ class DatabaseManager:
         rows = cursor.fetchall()
         connection.close()
         return rows
-    
+
     def get_articles(self, key=None):
+        """Hakee articlen tai kaikki articlet tietokannasta"""
         connection = self.connect()
         cursor = connection.cursor()
         if key:
@@ -141,8 +175,9 @@ class DatabaseManager:
         rows = cursor.fetchall()
         connection.close()
         return rows
-    
+
     def get_books(self, key=None):
+        """Hakee bookin tai kaikki bookit tietokannasta"""
         connection = self.connect()
         cursor = connection.cursor()
         if key:
@@ -152,13 +187,14 @@ class DatabaseManager:
         rows = cursor.fetchall()
         connection.close()
         return rows
-    
+
     # muokkaus tietokannassa
     def edit_entry(self, entry_type, target_key, **kwargs):
+        """Muokkaa tietokannan merkintää."""
         connection = self.connect()
         cursor = connection.cursor()
 
-        fields = ', '.join([f"{k} = ?" for k in kwargs.keys()])
+        fields = ', '.join([f"{k} = ?" for k in kwargs])
         values = list(kwargs.values())
         values.append(target_key)
 
@@ -167,13 +203,15 @@ class DatabaseManager:
 
         connection.commit()
         connection.close()
-    
+
 
 class ReferenceManager:
+    """Vastaa viitteiden käsittelystä tietokannassa."""
     def __init__(self):
         self.db_manager = DatabaseManager()
 
     def listaa(self):
+        """Listaa kaikki viitteet tietokannasta."""
         inproceedings = self.db_manager.get_inproceedings()
         articles = self.db_manager.get_articles()
         books = self.db_manager.get_books()
@@ -189,34 +227,38 @@ class ReferenceManager:
         print("\nBooks:")
         for row in books:
             print(row)
-    
+
     def entry_info(self, entry_type, target_key):
-        if entry_type == "inproceeding":
-            rows = self.db_manager.get_inproceedings(target_key)
-            if not rows:
-                return None
-            return Inproceeding(*rows[0][1:])
-        elif entry_type == "article":
-            rows = self.db_manager.get_articles(target_key)
-            if not rows:
-                return None
-            return Article(*rows[0][1:])
-        elif entry_type == "book":
-            rows = self.db_manager.get_books(target_key)
-            if not rows:
-                return None
-            return Book(*rows[0][1:])
-        else:
+        """Hakee tietyn viitteen tiedot tietokannasta."""
+        fetch_map = {
+            "inproceeding": (self.db_manager.get_inproceedings, Inproceeding),
+            "article": (self.db_manager.get_articles, Article),
+            "book": (self.db_manager.get_books, Book),
+        }
+
+        if entry_type not in fetch_map:
             return None
-    
+
+        fetcher, constructor = fetch_map[entry_type]
+        rows = fetcher(target_key)
+
+        if not rows:
+            return None
+
+        return constructor(*rows[0][1:])
+
     def edit_entry(self, entry_type, target_key, **kwargs):
+        """Muokkaa tietyn viitteen tietoja tietokannassa."""
         self.db_manager.edit_entry(entry_type, target_key, **kwargs)
 
     def add_book(self, key, author, title, year, publisher):
+        """lisää kirjan tietokantaan"""
         self.db_manager.insert_book(Book(key, author, title, year, publisher))
-    
+
     def add_article(self, key, author, title, journal, year, volume, pages):
+        """lisää artikkelin tietokantaan"""
         self.db_manager.insert_article(Article(key, author, title, journal, year, volume, pages))
-    
+
     def add_inproceeding(self, key, author, title, year, booktitle):
+        """lisää inproceedingin tietokantaan"""
         self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle))

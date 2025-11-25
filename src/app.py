@@ -109,9 +109,9 @@ class App:
 
         if type_choice == "1":
             return "inproceeding"
-        elif type_choice == "2":
+        if type_choice == "2":
             return "article"
-        elif type_choice == "3":
+        if type_choice == "3":
             return "book"
         else:
             self.io.write("Virheellinen valinta")

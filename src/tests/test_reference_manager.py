@@ -53,7 +53,10 @@ def test_add_article(tmp_path):
     # Tarkistetaan että artikkeli päätyi tietokantaan
     conn = sqlite3.connect(db_file)
     cur = conn.cursor()
-    cur.execute("SELECT key, author, title, journal, year, volume, pages FROM article WHERE key='TEST1';")
+    cur.execute(
+        "SELECT key, author, title, journal, year, volume, pages "
+        "FROM article WHERE key='TEST1';"
+    )
     result = cur.fetchone()
 
     assert result == ("TEST1", "Test author", "Test title", "Test journal", 2020, "test", "test")
