@@ -113,6 +113,5 @@ class App:
             return "article"
         if type_choice == "3":
             return "book"
-        else:
-            self.io.write("Virheellinen valinta")
-            return None
+        self.io.write("Virheellinen valinta")
+        return None
