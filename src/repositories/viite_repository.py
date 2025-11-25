@@ -1,8 +1,8 @@
 """Tietokannan hallinta ja viitteiden käsittely."""
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-from entities.refobj import Article, Inproceeding, Book
 import sqlite3
+from entities.refobj import Article, Inproceeding, Book
 
 VPL11 = Inproceeding(
     key="VPL11",
@@ -25,7 +25,7 @@ CBH91 = Article(
     pages="38--46"
 )
 
-Martin09 = Book(
+MARTIN09 = Book(
     key="Martin09",
     author="Martin, Robert",
     title="Clean Code: A Handbook of Agile Software Craftsmanship",
@@ -33,7 +33,7 @@ Martin09 = Book(
     publisher="Prentice Hall"
 )
 
-entries = [VPL11, CBH91, Martin09]
+entries = [VPL11, CBH91, MARTIN09]
 
 
 class DatabaseManager:
@@ -46,7 +46,7 @@ class DatabaseManager:
         if self.connect().execute("SELECT COUNT(*) FROM inproceeding;").fetchone()[0] == 0:
             self.insert_inproceeding(VPL11)
             self.insert_article(CBH91)
-            self.insert_book(Martin09)
+            self.insert_book(MARTIN09)
 
     def connect(self):
         """Yhdistää tietokantaan."""
