@@ -1,7 +1,7 @@
 """Viitteiden hallinta ja käsittely."""
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-from database_manager import DatabaseManager
+from repositories.database_manager import DatabaseManager
 from entities.refobj import Article, Inproceeding, Book
 
 class ReferenceManager:
