@@ -25,8 +25,8 @@ class App:
             elif choice == "2":
                 self.reference_manager.listaa()
             elif choice == "3":
-                self.io.write("Coming soon...")
-                #self.reference_manager.export_bibtex()
+                self.reference_manager.export_bibtex("references.bib")
+                self.io.write("BibTeX-tiedosto references.bib luotu")
             elif choice == "4":
                 self.edit_reference()
             elif choice == "5":

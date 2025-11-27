@@ -65,3 +65,40 @@ class ReferenceManager:
     def add_inproceeding(self, key, author, title, year, booktitle):
         """lisää inproceedingin tietokantaan"""
         self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle))
+
+    def export_bibtex(self, filename):
+        """Vie kaikki viitteet BibTeX-tiedostoon."""
+        inproceedings = self.db_manager.get_inproceedings()
+        articles = self.db_manager.get_articles()
+        books = self.db_manager.get_books()
+
+        with open(filename, "w", encoding="utf-8") as f:
+            for row in inproceedings:
+                _, key, author, title, year, booktitle = row
+                f.write(f"@inproceedings{{{key},\n")
+                f.write(f"  author = {{{author}}},\n")
+                f.write(f"  title = {{{title}}},\n")
+                f.write(f"  booktitle = {{{booktitle}}},\n")
+                f.write(f"  year = {{{year}}}\n")
+                f.write("}\n\n")
+
+            for row in articles:
+                _, key, author, title, journal, year, volume, pages = row
+                f.write(f"@article{{{key},\n")
+                f.write(f"  author = {{{author}}},\n")
+                f.write(f"  title = {{{title}}},\n")
+                f.write(f"  journal = {{{journal}}},\n")
+                f.write(f"  year = {{{year}}},\n")
+                f.write(f"  volume = {{{volume}}},\n")
+                f.write(f"  pages = {{{pages}}}\n")
+                f.write("}\n\n")
+
+            for row in books:
+                _, key, author, title, year, publisher = row
+                f.write(f"@book{{{key},\n")
+                f.write(f"  author = {{{author}}},\n")
+                f.write(f"  title = {{{title}}},\n")
+                f.write(f"  year = {{{year}}},\n")
+                f.write(f"  publisher = {{{publisher}}}\n")
+                f.write("}\n\n")
+
