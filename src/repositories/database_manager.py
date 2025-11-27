@@ -203,3 +203,16 @@ class DatabaseManager:
 
         connection.commit()
         connection.close()
+
+    def delete_entry(self, entry_type, target_key):
+        """Poistaa tietokannan merkinnän."""
+        connection = self.connect()
+        cursor = connection.cursor()
+
+        poistettava = [target_key]
+
+        query = f"DELETE FROM {entry_type} WHERE key = ?;"
+        cursor.execute(query, poistettava)
+
+        connection.commit()
+        connection.close()

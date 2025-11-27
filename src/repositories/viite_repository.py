@@ -50,6 +50,10 @@ class ReferenceManager:
         """Muokkaa tietyn viitteen tietoja tietokannassa."""
         self.db_manager.edit_entry(entry_type, target_key, **kwargs)
 
+    def delete_entry(self, entry_type, target_key):
+        """Poistaa tietyn viitteen tietokannassa."""
+        self.db_manager.delete_entry(entry_type, target_key)
+
     def add_book(self, key, author, title, year, publisher):
         """lisää kirjan tietokantaan"""
         self.db_manager.insert_book(Book(key, author, title, year, publisher))
