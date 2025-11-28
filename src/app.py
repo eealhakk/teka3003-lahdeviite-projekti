@@ -22,7 +22,12 @@ class App:
             if choice == "1":
                 self.add_reference()
             elif choice == "2":
-                self.reference_manager.listaa()
+                value = self.io.read("Syöte: ").strip()
+                if value != '0':
+                    self.reference_manager.filter_references(value)
+                else:
+                    self.reference_manager.listaa()
+
             elif choice == "3":
                 self.io.write("Coming soon...")
                 #self.reference_manager.export_bibtex()

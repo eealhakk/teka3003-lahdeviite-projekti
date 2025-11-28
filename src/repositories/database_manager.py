@@ -203,3 +203,68 @@ class DatabaseManager:
 
         connection.commit()
         connection.close()
+
+    #filter_references_db(author, year)
+    def filter_references_db(self, conditions):
+        # Mapit pääluokille ja attribuuteille TODO: Tämän voi toteuttaa hakuna tietokannasta jos kantaan tulee uusia tauluja
+        classes_map = {1: "inproceeding", 2: "article", 3: "book"}
+        attributes_map = {
+            4: "key", 5: "author", 6: "title", 7: "year",
+            8: "publisher", 9: "volume", 10: "pages", 11: "booktitle"
+        }
+    
+        # Tarkistetaan, löytyykö 0 listasta
+        list_all = 0 in conditions
+    
+        # Valitut luokat ja attribuutit
+        selected_classes = [classes_map[c] for c in conditions if c in classes_map]
+        selected_attributes = [attributes_map[c] for c in conditions if c in attributes_map]
+    
+        # Jos listataan kaikki, valitaan kaikki luokat ja tyhjennetään attribuutit (kaikki tulostetaan)
+        if list_all:
+            selected_classes = ["inproceeding", "article", "book"]
+            selected_attributes = []  # tyhjä lista = kaikki attribuutit tulostetaan
+    
+        # Kartoitus luokkien ja tietokantahakufunktioiden välillä
+        fetch_map = {
+            "inproceeding": (self.get_inproceedings, Inproceeding),
+            "article": (self.get_articles, Article),
+            "book": (self.get_books, Book),
+        }
+    
+        #TODO Logiikka alla kesken
+        # Käydään valitut luokat läpi
+        for cls_name in selected_classes:
+            # Hakee tuple-muodossa: (fetch-funktio, Python-luokka)
+            fetch_func, cls_type = fetch_map[cls_name]
+    
+            # Haetaan kaikki tietueet tietokannasta
+            rows = fetch_func()  # palauttaa listan tupleja
+    
+            # Käydään jokainen tietue läpi
+            for row in rows:
+                # Luodaan objekti rivin tiedoista
+                # row[0] oletetaan olevan tietokannan sisäinen id, joten käytetään row[1:]
+                obj = cls_type(*row[1:])
+    
+                # Jos listataan kaikki tai attribuuteja ei ole erikseen valittu, tulostetaan koko objekti
+                if list_all or not selected_attributes:
+                    print(obj)
+                else:
+                    # Muuten tulostetaan vain valitut attribuutit
+                    print (obj.__class__.__name__)
+                    output = []
+                    for attr in selected_attributes:
+                        if hasattr(obj, attr):  # Tarkistetaan, että attribuutti löytyy objektista
+                            output.append(f"{attr}={getattr(obj, attr)}")
+                    print(", ".join(output))
+    
+                print("-" * 40)
+    
+    
+    
+    
+    
+    
+    
+    
