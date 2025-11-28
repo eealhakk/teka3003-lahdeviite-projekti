@@ -63,7 +63,6 @@ class TestReferenceManager(unittest.TestCase):
         "Books:\n" +
         "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
 
-<<<<<<< HEAD
     
     def test_export_bibtex(self):
         """Testaa export_bibtex-metodia"""
@@ -87,7 +86,7 @@ class TestReferenceManager(unittest.TestCase):
 
         self.assertIn("@book{TEST1,", content)
         self.assertIn("publisher = {Test publisher1}", content)
-=======
+
 
     def test_delete_entry_finds_thing(self):
         """Testataan viite_repositoryn delete_entry-metodia niin että poistettava löytyy."""
@@ -119,4 +118,3 @@ class TestReferenceManager(unittest.TestCase):
         "(1, 'TEST2', 'Pyyttoni', 'Test title2', 'Test journal2', 1899, 2, '2')\n\n" +
         "Books:\n" +
         "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
->>>>>>> 7ef1724 (More tests to test_reference_manager.py.)
