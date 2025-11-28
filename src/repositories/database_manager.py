@@ -216,9 +216,8 @@ class DatabaseManager:
 
         connection.commit()
         connection.close()
-
     
-    #filter_references_db(author, year)
+    # Filter_references_db(author, year)
     def filter_references_db(self, conditions):
         # Mapit pääluokille ja attribuuteille TODO: Tämän voi toteuttaa hakuna tietokannasta jos kantaan tulee uusia tauluja
         classes_map = {1: "inproceeding", 2: "article", 3: "book"}
@@ -239,26 +238,24 @@ class DatabaseManager:
             selected_classes = ["inproceeding", "article", "book"]
             selected_attributes = []  # tyhjä lista = kaikki attribuutit tulostetaan
     
-        # Kartoitus luokkien ja tietokantahakufunktioiden välillä
         fetch_map = {
             "inproceeding": (self.get_inproceedings, Inproceeding),
             "article": (self.get_articles, Article),
             "book": (self.get_books, Book),
         }
     
-        #TODO Logiikka alla kesken
-        # Käydään valitut luokat läpi
+        # Käydään valitut luokat läpi TODO Logiikka alla kesken
         for cls_name in selected_classes:
-            # Hakee tuple-muodossa: (fetch-funktio, Python-luokka)
+
             fetch_func, cls_type = fetch_map[cls_name]
     
             # Haetaan kaikki tietueet tietokannasta
             rows = fetch_func()  # palauttaa listan tupleja
     
-            # Käydään jokainen tietue läpi
+            # Käydään tietueet läpi
             for row in rows:
                 # Luodaan objekti rivin tiedoista
-                # row[0] oletetaan olevan tietokannan sisäinen id, joten käytetään row[1:]
+                # Row[0] tietokannan sisäinen id ?, joten käytetään row[1:]
                 obj = cls_type(*row[1:])
     
                 # Jos listataan kaikki tai attribuuteja ei ole erikseen valittu, tulostetaan koko objekti
@@ -273,7 +270,7 @@ class DatabaseManager:
                             output.append(f"{attr}={getattr(obj, attr)}")
                     print(", ".join(output))
     
-                print("-" * 40)
+                print("-"*40)
     
     
     
