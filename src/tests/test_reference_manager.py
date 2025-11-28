@@ -63,6 +63,7 @@ class TestReferenceManager(unittest.TestCase):
         "Books:\n" +
         "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
 
+<<<<<<< HEAD
     
     def test_export_bibtex(self):
         """Testaa export_bibtex-metodia"""
@@ -86,3 +87,36 @@ class TestReferenceManager(unittest.TestCase):
 
         self.assertIn("@book{TEST1,", content)
         self.assertIn("publisher = {Test publisher1}", content)
+=======
+
+    def test_delete_entry_finds_thing(self):
+        """Testataan viite_repositoryn delete_entry-metodia niin että poistettava löytyy."""
+        self.ref.delete_entry("book", "TEST1")
+        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n" +
+        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n\n" +
+        "Articles:\n" +
+        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n\n" +
+        "Books:\n")
+
+
+    def test_delete_entry_doesnt_find(self):
+        """Testataan viite_repositoryn delete_entry-metodia että poistettava ei löydy."""
+        self.ref.delete_entry("book", "TEST2")
+        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n" +
+        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n\n" +
+        "Articles:\n" +
+        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n\n" +
+        "Books:\n" +
+        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
+
+
+    def test_edit_entry(self):
+        """Testataan viite_repositoryn edit_entry-metodia, että osaa muokata."""
+        self.ref.edit_entry("article", "TEST2", author="Pyyttoni", year=1899)
+        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n" +
+        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n\n" +
+        "Articles:\n" +
+        "(1, 'TEST2', 'Pyyttoni', 'Test title2', 'Test journal2', 1899, 2, '2')\n\n" +
+        "Books:\n" +
+        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
+>>>>>>> 7ef1724 (More tests to test_reference_manager.py.)
