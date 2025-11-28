@@ -62,3 +62,27 @@ class TestReferenceManager(unittest.TestCase):
         "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n\n" +
         "Books:\n" +
         "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
+
+    
+    def test_export_bibtex(self):
+        """Testaa export_bibtex-metodia"""
+        bib_file = "test_bibtex.bib"
+        self.ref.export_bibtex(bib_file)
+
+        # Tarkistetaan, että tiedosto luotiin
+        self.assertTrue(os.path.exists(bib_file))
+
+        # Luetaan tiedoston sisältö
+        with open(bib_file, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        # Tarkistetaan, että BibTeX-merkinnät löytyvät
+        self.assertIn("@inproceedings{TEST3,", content)
+        self.assertIn("author = {Test author3}", content)
+        self.assertIn("booktitle = {Test booktitle3}", content)
+
+        self.assertIn("@article{TEST2,", content)
+        self.assertIn("journal = {Test journal2}", content)
+
+        self.assertIn("@book{TEST1,", content)
+        self.assertIn("publisher = {Test publisher1}", content)

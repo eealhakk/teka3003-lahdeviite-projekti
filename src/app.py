@@ -10,7 +10,7 @@ class App:
     def run(self):
         """Metodi joka kysyy käyttäjältä haluttua toimintoa"""
         while True:
-            self.io.write("\n=== Valiste toiminto ===")
+            self.io.write("\n=== Valitse toiminto ===")
             self.io.write("1) Lisää uusi viite")
             self.io.write("2) Listaa kaikki viitteet")
             self.io.write("3) Vie BibTeX-tiedosto")
