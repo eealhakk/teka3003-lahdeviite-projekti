@@ -56,13 +56,13 @@ class App:
             return
         self.io.write("\n"+str(poistettava)+"\n")
 
-        self.io.write("Haluatko varmasti poistaa viitteen? \n 1. Kyllä \n 2. Ei")
-        choice = self.io.read("Valinta: ").strip()
+        self.io.write("Haluatko varmasti poistaa viitteen? (K/E)")
+        choice = self.io.read("Valinta: ").strip().upper()
 
-        if choice == "1":
+        if choice == "K":
             self.reference_manager.delete_entry(ref_type, key_editing)
             self.io.write("Viite poistettu!")
-        elif choice == "2":
+        elif choice == "E":
             return
 
     def edit_reference(self):
