@@ -22,8 +22,8 @@ class TestReferenceManager(unittest.TestCase):
         # Lisättävä kirja
         self.ref.add_book(
             key="TEST1",
-            author="Test author2",
-            title="Test title2",
+            author="Test author1",
+            title="Test title1",
             year=2021,
             publisher="Test publisher1"
         )
@@ -47,6 +47,11 @@ class TestReferenceManager(unittest.TestCase):
             year=2023,
             booktitle="Test booktitle3"
         )
+
+
+    def tearDown(self):
+        if os.path.exists("test.db"):
+            os.remove("test.db")
 
 
     def test_add_entries(self):

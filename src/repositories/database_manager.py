@@ -43,10 +43,10 @@ class DatabaseManager:
         self.create_database()
 
         #testidata
-        if self.connect().execute("SELECT COUNT(*) FROM inproceeding;").fetchone()[0] == 0:
-            self.insert_inproceeding(VPL11)
-            self.insert_article(CBH91)
-            self.insert_book(MARTIN09)
+        #if self.connect().execute("SELECT COUNT(*) FROM inproceeding;").fetchone()[0] == 0:
+        #    self.insert_inproceeding(VPL11)
+        #    self.insert_article(CBH91)
+        #    self.insert_book(MARTIN09)
 
     def connect(self):
         """Yhdistää tietokantaan."""
