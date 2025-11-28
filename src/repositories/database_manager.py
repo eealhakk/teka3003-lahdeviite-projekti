@@ -43,10 +43,10 @@ class DatabaseManager:
         self.create_database()
 
         #testidata
-        if self.connect().execute("SELECT COUNT(*) FROM inproceeding;").fetchone()[0] == 0:
-            self.insert_inproceeding(VPL11)
-            self.insert_article(CBH91)
-            self.insert_book(MARTIN09)
+        #if self.connect().execute("SELECT COUNT(*) FROM inproceeding;").fetchone()[0] == 0:
+        #    self.insert_inproceeding(VPL11)
+        #    self.insert_article(CBH91)
+        #    self.insert_book(MARTIN09)
 
     def connect(self):
         """Yhdistää tietokantaan."""
@@ -204,6 +204,20 @@ class DatabaseManager:
         connection.commit()
         connection.close()
 
+    def delete_entry(self, entry_type, target_key):
+        """Poistaa tietokannan merkinnän."""
+        connection = self.connect()
+        cursor = connection.cursor()
+
+        poistettava = [target_key]
+
+        query = f"DELETE FROM {entry_type} WHERE key = ?;"
+        cursor.execute(query, poistettava)
+
+        connection.commit()
+        connection.close()
+
+    
     #filter_references_db(author, year)
     def filter_references_db(self, conditions):
         # Mapit pääluokille ja attribuuteille TODO: Tämän voi toteuttaa hakuna tietokannasta jos kantaan tulee uusia tauluja

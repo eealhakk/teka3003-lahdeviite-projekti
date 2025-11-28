@@ -6,3 +6,5 @@ __pycache__
 htmlcov
 .venv
 references.db
+teka3003-lahdeviite-projekti.code-workspace
+test.db

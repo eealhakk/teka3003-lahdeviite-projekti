@@ -10,22 +10,24 @@ class ReferenceManager:
         self.db_manager = DatabaseManager(db_name)
 
     def listaa(self):
-        """Listaa kaikki viitteet tietokannasta."""
+        """Palauttaa listauksen kaikista viitteistä tietokannassa."""
         inproceedings = self.db_manager.get_inproceedings()
         articles = self.db_manager.get_articles()
         books = self.db_manager.get_books()
 
-        print("Inproceedings:")
+        listing = "Inproceedings:\n"
         for row in inproceedings:
-            print(row)
+            listing += str(row) + "\n"
 
-        print("\nArticles:")
+        listing += "\nArticles:\n"
         for row in articles:
-            print(row)
+            listing += str(row) + "\n"
 
-        print("\nBooks:")
+        listing += "\nBooks:\n"
         for row in books:
-            print(row)
+            listing += str(row) + "\n"
+
+        return listing
 
     def filter_references(self, arvot):
         try:
@@ -69,6 +71,10 @@ class ReferenceManager:
         """Muokkaa tietyn viitteen tietoja tietokannassa."""
         self.db_manager.edit_entry(entry_type, target_key, **kwargs)
 
+    def delete_entry(self, entry_type, target_key):
+        """Poistaa tietyn viitteen tietokannassa."""
+        self.db_manager.delete_entry(entry_type, target_key)
+
     def add_book(self, key, author, title, year, publisher):
         """lisää kirjan tietokantaan"""
         self.db_manager.insert_book(Book(key, author, title, year, publisher))
@@ -80,3 +86,40 @@ class ReferenceManager:
     def add_inproceeding(self, key, author, title, year, booktitle):
         """lisää inproceedingin tietokantaan"""
         self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle))
+
+    def export_bibtex(self, filename):
+        """Vie kaikki viitteet BibTeX-tiedostoon."""
+        inproceedings = self.db_manager.get_inproceedings()
+        articles = self.db_manager.get_articles()
+        books = self.db_manager.get_books()
+
+        with open(filename, "w", encoding="utf-8") as f:
+            for row in inproceedings:
+                _, key, author, title, year, booktitle = row
+                f.write(f"@inproceedings{{{key},\n")
+                f.write(f"  author = {{{author}}},\n")
+                f.write(f"  title = {{{title}}},\n")
+                f.write(f"  booktitle = {{{booktitle}}},\n")
+                f.write(f"  year = {{{year}}}\n")
+                f.write("}\n\n")
+
+            for row in articles:
+                _, key, author, title, journal, year, volume, pages = row
+                f.write(f"@article{{{key},\n")
+                f.write(f"  author = {{{author}}},\n")
+                f.write(f"  title = {{{title}}},\n")
+                f.write(f"  journal = {{{journal}}},\n")
+                f.write(f"  year = {{{year}}},\n")
+                f.write(f"  volume = {{{volume}}},\n")
+                f.write(f"  pages = {{{pages}}}\n")
+                f.write("}\n\n")
+
+            for row in books:
+                _, key, author, title, year, publisher = row
+                f.write(f"@book{{{key},\n")
+                f.write(f"  author = {{{author}}},\n")
+                f.write(f"  title = {{{title}}},\n")
+                f.write(f"  year = {{{year}}},\n")
+                f.write(f"  publisher = {{{publisher}}}\n")
+                f.write("}\n\n")
+

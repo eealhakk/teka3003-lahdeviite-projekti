@@ -10,12 +10,13 @@ class App:
     def run(self):
         """Metodi joka kysyy käyttäjältä haluttua toimintoa"""
         while True:
-            self.io.write("\n=== Valiste toiminto ===")
+            self.io.write("\n=== Valitse toiminto ===")
             self.io.write("1) Lisää uusi viite")
             self.io.write("2) Listaa kaikki viitteet")
             self.io.write("3) Vie BibTeX-tiedosto")
             self.io.write("4) Muokkaa viitettä")
-            self.io.write("5) Lopeta\n")
+            self.io.write("5) Poista viite")
+            self.io.write("6) Lopeta\n")
 
             choice = self.io.read("Valinta: ").strip()
 
@@ -29,14 +30,40 @@ class App:
                     self.reference_manager.listaa()
 
             elif choice == "3":
-                self.io.write("Coming soon...")
-                #self.reference_manager.export_bibtex()
+                self.reference_manager.export_bibtex("references.bib")
+                self.io.write("BibTeX-tiedosto references.bib luotu")
             elif choice == "4":
                 self.edit_reference()
             elif choice == "5":
+                self.delete_reference()
+            elif choice == "6":
                 break
             else:
                 self.io.write("Virheellinen valinta")
+
+    def delete_reference(self):
+        """Metodi lähteen poistamiseen"""
+
+        ref_type = self.ask_type()
+        if not ref_type:
+            return
+
+        key_editing = self.io.read("Anna poistettavan viitteen BibTeX-avain: ").strip()
+        poistettava = self.reference_manager.entry_info(ref_type, str(key_editing))
+
+        if not poistettava:
+            self.io.write("Viitettä ei löydy.")
+            return
+        self.io.write("\n"+str(poistettava)+"\n")
+
+        self.io.write("Haluatko varmasti poistaa viitteen? \n 1. Kyllä \n 2. Ei")
+        choice = self.io.read("Valinta: ").strip()
+
+        if choice == "1":
+            self.reference_manager.delete_entry(ref_type, key_editing)
+            self.io.write("Viite poistettu!")
+        elif choice == "2":
+            return
 
     def edit_reference(self):
         """Metodi lähteen muokkaamiseen"""
@@ -77,6 +104,10 @@ class App:
             return
 
         key = self.io.read("BibTeX-avain: ").strip()
+
+        if self.reference_manager.entry_info(ref_type, str(key)):
+            self.io.write("Bibtex-koodi on jo käytössä!")
+            return
 
         if ref_type == "inproceeding":
             author = self.io.read("Author: ").strip()
