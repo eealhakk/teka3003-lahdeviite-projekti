@@ -40,14 +40,6 @@ class ReferenceManager:
         print (self.db_manager.filter_references_db(choices))
         print("=====================================")
 
-        # Ottaa kaikki viitteet vastaan
-        # Ottaa suodatusparametrit vastaan
-        #       1. Pelkillä viiteavaimilla haku
-        #       2. Tageillä haku
-        #1: 
-        #Haetaan data
-
-
     def entry_info(self, entry_type, target_key):
         """Hakee tietyn viitteen tiedot tietokannasta."""
         fetch_map = {
