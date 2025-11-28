@@ -30,6 +30,7 @@ class ReferenceManager:
         return listing
 
     def filter_references(self, arvot):
+        """Siistitään filter syötettä ja välitetään filtteröinti"""
         try:
             # Muutetaan syöte listaksi kokonaislukuja
             choices = [int(x.strip()) for x in arvot.split(",")]
@@ -79,7 +80,7 @@ class ReferenceManager:
         """lisää inproceedingin tietokantaan"""
         self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle))
 
-    def export_bibtex(self, filename):
+    def export_bibtex(self, filename): # pylint: disable=too-many-locals #TODO too many?
         """Vie kaikki viitteet BibTeX-tiedostoon."""
         inproceedings = self.db_manager.get_inproceedings()
         articles = self.db_manager.get_articles()
@@ -114,4 +115,3 @@ class ReferenceManager:
                 f.write(f"  year = {{{year}}},\n")
                 f.write(f"  publisher = {{{publisher}}}\n")
                 f.write("}\n\n")
-

@@ -216,49 +216,54 @@ class DatabaseManager:
 
         connection.commit()
         connection.close()
-    
-    # Filter_references_db(author, year)
-    def filter_references_db(self, conditions):
-        # Mapit pääluokille ja attribuuteille TODO: Tämän voi toteuttaa hakuna tietokannasta jos kantaan tulee uusia tauluja
+
+    # Filter_references_db(author, year) TODO raja lokaaleille?
+    def filter_references_db(self, conditions): # pylint: disable=too-many-locals
+        """Hakee tietokannasta avaimilla oikeat tiedot"""
+        # TODO: Tämän voi toteuttaa hakuna tietokannasta # pylint: disable=W0511
+        # jos kantaan tulee uusia tauluja
+        # Mapit pääluokille ja attribuuteille
         classes_map = {1: "inproceeding", 2: "article", 3: "book"}
         attributes_map = {
             4: "key", 5: "author", 6: "title", 7: "year",
             8: "publisher", 9: "volume", 10: "pages", 11: "booktitle"
         }
-    
+
         # Tarkistetaan, löytyykö 0 listasta
         list_all = 0 in conditions
-    
+
         # Valitut luokat ja attribuutit
         selected_classes = [classes_map[c] for c in conditions if c in classes_map]
         selected_attributes = [attributes_map[c] for c in conditions if c in attributes_map]
-    
-        # Jos listataan kaikki, valitaan kaikki luokat ja tyhjennetään attribuutit (kaikki tulostetaan)
+
+        # Jos listataan kaikki, valitaan kaikki luokat ja tyhjennetään
+        # attribuutit (kaikki tulostetaan)
         if list_all:
             selected_classes = ["inproceeding", "article", "book"]
             selected_attributes = []  # tyhjä lista = kaikki attribuutit tulostetaan
-    
+
         fetch_map = {
             "inproceeding": (self.get_inproceedings, Inproceeding),
             "article": (self.get_articles, Article),
             "book": (self.get_books, Book),
         }
-    
+
         # Käydään valitut luokat läpi TODO Logiikka alla kesken
         for cls_name in selected_classes:
 
             fetch_func, cls_type = fetch_map[cls_name]
-    
+
             # Haetaan kaikki tietueet tietokannasta
             rows = fetch_func()  # palauttaa listan tupleja
-    
+
             # Käydään tietueet läpi
             for row in rows:
                 # Luodaan objekti rivin tiedoista
                 # Row[0] tietokannan sisäinen id ?, joten käytetään row[1:]
                 obj = cls_type(*row[1:])
-    
-                # Jos listataan kaikki tai attribuuteja ei ole erikseen valittu, tulostetaan koko objekti
+
+                # Jos listataan kaikki tai attribuuteja ei ole erikseen valittu,
+                # tulostetaan koko objekti
                 if list_all or not selected_attributes:
                     print(obj)
                 else:
@@ -269,13 +274,5 @@ class DatabaseManager:
                         if hasattr(obj, attr):  # Tarkistetaan, että attribuutti löytyy objektista
                             output.append(f"{attr}={getattr(obj, attr)}")
                     print(", ".join(output))
-    
+
                 print("-"*40)
-    
-    
-    
-    
-    
-    
-    
-    
