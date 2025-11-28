@@ -1,10 +1,10 @@
 """Testit ReferenceManager-luokalle"""
-import sqlite3
 import unittest
 import os
 from repositories.viite_repository import ReferenceManager
 
 class TestReferenceManager(unittest.TestCase):
+    """Testaa ReferenceManager-luokan toiminnallisuuksia."""
     def setUp(self):
         """Luodaan testisetuppi ReferenceManagerin testaamiseksi."""
         # Poistetaan väliaikainen tietokantatiedosto, jos sellainen on jääny
@@ -63,7 +63,7 @@ class TestReferenceManager(unittest.TestCase):
         "Books:\n" +
         "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
 
-    
+
     def test_export_bibtex(self):
         """Testaa export_bibtex-metodia"""
         bib_file = "test_bibtex.bib"
