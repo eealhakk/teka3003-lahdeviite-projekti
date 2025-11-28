@@ -20,8 +20,9 @@ class TestDatabaseManager(unittest.TestCase):
         cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
         table_names = {row[0] for row in cur.fetchall()}
         conn.close()
-        
+
         #Varmistetaan, että kaikki odotetut taulut ovat olemassa
         assert "inproceeding" in table_names
         assert "article" in table_names
         assert "book" in table_names
+        
