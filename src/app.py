@@ -100,6 +100,10 @@ class App:
 
         key = self.io.read("BibTeX-avain: ").strip()
 
+        if self.reference_manager.entry_info(ref_type, str(key)):
+            self.io.write("Bibtex-koodi on jo käytössä!")
+            return
+
         if ref_type == "inproceeding":
             author = self.io.read("Author: ").strip()
             title = self.io.read("Title: ").strip()
