@@ -23,7 +23,7 @@ class App:
             if choice == "1":
                 self.add_reference()
             elif choice == "2":
-                self.reference_manager.listaa()
+                print(self.reference_manager.listaa())
             elif choice == "3":
                 self.reference_manager.export_bibtex("references.bib")
                 self.io.write("BibTeX-tiedosto references.bib luotu")

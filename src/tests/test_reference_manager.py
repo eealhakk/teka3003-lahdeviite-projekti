@@ -1,11 +1,17 @@
 """Testit ReferenceManager-luokalle"""
 import sqlite3
 import unittest
+import os
 from repositories.viite_repository import ReferenceManager
 
 class TestReferenceManager(unittest.TestCase):
     def setUp(self):
         """Luodaan testisetuppi ReferenceManagerin testaamiseksi."""
+        # Poistetaan väliaikainen tietokantatiedosto, jos sellainen on jääny
+        # edeltävistä testeistä
+        if os.path.exists("test.db"):
+            os.remove("test.db")
+
         # Luodaan väliaikainen tietokantatiedosto
         self.db_file = "test.db"
 
@@ -43,24 +49,11 @@ class TestReferenceManager(unittest.TestCase):
         )
 
 
-    def test_add_book(self):
-        # Tarkistetaan että kirja päätyi tietokantaan
-        conn = sqlite3.connect(self.db_file)
-        cur = conn.cursor()
-        cur.execute("SELECT key, author, title, year, publisher FROM book WHERE key='TEST1';")
-        result = cur.fetchone()
-
-        assert result == ("TEST1", "Test author", "Test title", 2020, "Test publisher")
-
-    def test_add_article(self):
-
-        # Tarkistetaan että artikkeli päätyi tietokantaan
-        conn = sqlite3.connect(self.db_file)
-        cur = conn.cursor()
-        cur.execute(
-            "SELECT key, author, title, journal, year, volume, pages "
-            "FROM article WHERE key='TEST1';"
-        )
-        result = cur.fetchone()
-
-        assert result == ("TEST1", "Test author", "Test title", "Test journal", 2020, "test", "test")
+    def test_add_entries(self):
+        """Tarkistetaan että setUpissa luodut lisättävät päätyivät tietokantaan"""
+        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n" +
+        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n\n" +
+        "Articles:\n" +
+        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n\n" +
+        "Books:\n" +
+        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")

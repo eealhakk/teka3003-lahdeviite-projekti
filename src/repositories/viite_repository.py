@@ -10,22 +10,24 @@ class ReferenceManager:
         self.db_manager = DatabaseManager(db_name)
 
     def listaa(self):
-        """Listaa kaikki viitteet tietokannasta."""
+        """Palauttaa listauksen kaikista viitteistä tietokannassa."""
         inproceedings = self.db_manager.get_inproceedings()
         articles = self.db_manager.get_articles()
         books = self.db_manager.get_books()
 
-        print("Inproceedings:")
+        listing = "Inproceedings:\n"
         for row in inproceedings:
-            print(row)
+            listing += str(row) + "\n"
 
-        print("\nArticles:")
+        listing += "\nArticles:\n"
         for row in articles:
-            print(row)
+            listing += str(row) + "\n"
 
-        print("\nBooks:")
+        listing += "\nBooks:\n"
         for row in books:
-            print(row)
+            listing += str(row) + "\n"
+
+        return listing
 
     def entry_info(self, entry_type, target_key):
         """Hakee tietyn viitteen tiedot tietokannasta."""
