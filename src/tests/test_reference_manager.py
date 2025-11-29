@@ -118,3 +118,12 @@ class TestReferenceManager(unittest.TestCase):
         "(1, 'TEST2', 'Pyyttoni', 'Test title2', 'Test journal2', 1899, 2, '2')\n\n" +
         "Books:\n" +
         "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
+
+
+    def test_entry_info(self):
+        """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia"""
+        self.assertEqual(str(self.ref.entry_info("inproceeding", "TEST3")), "key=TEST3\n" +
+                         "author=Test author3\n" +
+                         "title=Test title3\n" +
+                         "year=2023\n" +
+                         "booktitle=Test booktitle3")
