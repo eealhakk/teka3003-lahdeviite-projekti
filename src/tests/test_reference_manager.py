@@ -120,10 +120,22 @@ class TestReferenceManager(unittest.TestCase):
         "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
 
 
-    def test_entry_info(self):
+    def test_entry_info_finds(self):
         """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia"""
         self.assertEqual(str(self.ref.entry_info("inproceeding", "TEST3")), "key=TEST3\n" +
                          "author=Test author3\n" +
                          "title=Test title3\n" +
                          "year=2023\n" +
                          "booktitle=Test booktitle3")
+
+
+    def test_entry_info_doesnt_find_entry_type(self):
+        """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia
+        niin, ettei löydy haluttua kohdetta."""
+        self.assertEqual(str(self.ref.entry_info("inproceedingdong", "TEST3")), "None")
+
+
+    def test_entry_info_doesnt_find_key(self):
+        """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia
+        niin, ettei löydy haluttua kohdetta."""
+        self.assertEqual(str(self.ref.entry_info("inproceeding", "TEST2")), "None")
