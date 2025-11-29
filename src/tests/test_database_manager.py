@@ -25,4 +25,3 @@ class TestDatabaseManager(unittest.TestCase):
         assert "inproceeding" in table_names
         assert "article" in table_names
         assert "book" in table_names
-        
