@@ -217,7 +217,6 @@ class DatabaseManager:
         connection.commit()
         connection.close()
 
-    # Filter_references_db(author, year) TODO raja lokaaleille?
     def filter_references_db(self, conditions): # pylint: disable=too-many-locals
         """Hakee tietokannasta avaimilla oikeat tiedot"""
         # TODO: Tämän voi toteuttaa hakuna tietokannasta # pylint: disable=W0511
@@ -254,25 +253,28 @@ class DatabaseManager:
             fetch_func, cls_type = fetch_map[cls_name]
 
             # Haetaan kaikki tietueet tietokannasta
-            rows = fetch_func()  # palauttaa listan tupleja
+            rows = fetch_func()
 
             # Käydään tietueet läpi
             for row in rows:
                 # Luodaan objekti rivin tiedoista
-                # Row[0] tietokannan sisäinen id ?, joten käytetään row[1:]
                 obj = cls_type(*row[1:])
 
                 # Jos listataan kaikki tai attribuuteja ei ole erikseen valittu,
                 # tulostetaan koko objekti
                 if list_all or not selected_attributes:
-                    print(obj)
+                    print(obj.__class__.__name__)
+                    #print(obj)
+                    for attr, value in obj.__dict__.items():
+                        if not attr.startswith("_"):
+                            print(f"{attr}: {value}")
                 else:
-                    # Muuten tulostetaan vain valitut attribuutit
-                    print (obj.__class__.__name__)
+                    # Tulostetaan vain valitut attribuutit
+                    print(obj.__class__.__name__)
                     output = []
                     for attr in selected_attributes:
-                        if hasattr(obj, attr):  # Tarkistetaan, että attribuutti löytyy objektista
-                            output.append(f"{attr}={getattr(obj, attr)}")
-                    print(", ".join(output))
+                        if hasattr(obj, attr):
+                            output.append(f"{attr}: {getattr(obj, attr)}")
+                    print(",\n".join(output))
 
                 print("-"*40)

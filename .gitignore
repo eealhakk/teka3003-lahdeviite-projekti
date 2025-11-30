@@ -5,6 +5,7 @@ __pycache__
 .coverage
 htmlcov
 .venv
-references.db
+*.db
 teka3003-lahdeviite-projekti.code-workspace
 test.db
+*.bib

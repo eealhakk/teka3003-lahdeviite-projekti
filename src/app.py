@@ -23,7 +23,10 @@ class App:
             if choice == "1":
                 self.add_reference()
             elif choice == "2":
-                value = self.io.read("Syöte(Toiminnallisuus vielä työstössä): ").strip()
+                self.io.write("(0) Listaa kaikki    (3) Book         (6) Title       (9) Volume") # pylint: disable=line-too-long
+                self.io.write("(1) Inproceedings    (4) Key          (7) Year        (10) Pages") # pylint: disable=line-too-long
+                self.io.write("(2) Article          (5) Author       (8) Publisher   (11) Booktitle") # pylint: disable=line-too-long
+                value = self.io.read("Syötä yksi tai useampi erotettuna pilkulla: ").strip()
                 if value != '0':
                     self.reference_manager.filter_references(value)
                 else:
