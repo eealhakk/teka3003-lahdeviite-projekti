@@ -206,3 +206,11 @@ class TestReferenceManager(unittest.TestCase):
         """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia
         niin, ettei löydy haluttua kohdetta."""
         self.assertEqual(str(self.ref.entry_info("inproceeding", "TEST2")), "None")
+
+
+    def test_get_references_by_tag(self):
+        """Testataan kaikki halutun tagin omaavien viitteiden hakeminen"""
+        self.assertEqual(str(self.ref.get_references_by_tag("mahtava"))
+                         "[('article', (1, 'TEST2', 'Test author2', 'Test title2', " +
+                         "'Test journal2', 2022, 2, '2')), ('book', (1, 'TEST1', " +
+                         "'Test author1', 'Test title1', 2021, 'Test publisher1'))]")
