@@ -27,6 +27,12 @@ class ReferenceManager:
         listing += "\nArticles:\n"
         for row in articles:
             listing += str(row) + "\n"
+            listing += (
+                "tagit: " 
+                + ", ".join(self.get_reference_tags("article", row[0]))
+                + "\n\n"
+            )
+
 
         listing += "\nBooks:\n"
         for row in books:
