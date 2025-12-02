@@ -1,5 +1,6 @@
-from repositories.viite_repository import ReferenceManager
+"""Robot Framework -kirjasto ReferenceManager-luokan testaamiseen"""
 import os
+from repositories.viite_repository import ReferenceManager
 
 class ReferenceManagerLibrary:
     """Robot Framework -kirjasto ReferenceManagerille robot testeihin"""
