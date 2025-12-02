@@ -18,7 +18,11 @@ class ReferenceManager:
         listing = "Inproceedings:\n"
         for row in inproceedings:
             listing += str(row) + "\n"
-            listing += "tagit: " + ", ".join(self.get_reference_tags("inproceeding", row[0])) + "\n\n"
+            listing += (
+                "tagit: " 
+                + ", ".join(self.get_reference_tags("inproceeding", row[0])) 
+                + "\n\n"
+            )
 
         listing += "\nArticles:\n"
         for row in articles:
@@ -88,7 +92,10 @@ class ReferenceManager:
         """lisää artikkelin tietokantaan"""
         if tags is None:
             tags = []
-        self.db_manager.insert_article(Article(key, author, title, journal, year, volume, pages), tags)
+        self.db_manager.insert_article(
+            Article(key, author, title, journal, year, volume, pages), 
+            tags
+        )
 
     def add_inproceeding(self, key, author, title, year, booktitle, tags=None):
         """lisää inproceedingin tietokantaan"""

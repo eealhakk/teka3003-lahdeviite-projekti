@@ -148,7 +148,9 @@ class App:
             volume = self.io.read("Volume: ").strip()
             pages = self.io.read("Pages: ").strip()
             tags = ask_tags()
-            self.reference_manager.add_article(key, author, title, journal, year, volume, pages, tags)
+            self.reference_manager.add_article(
+                key, author, title, journal, year, volume, pages, tags
+            )
 
         elif ref_type == "book":
             author = self.io.read("Author: ").strip()
