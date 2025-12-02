@@ -55,7 +55,7 @@ class ReferenceManager:
             # Muutetaan syöte listaksi kokonaislukuja
             choices = [int(x.strip()) for x in arvot.split(",")]
         except ValueError:
-            return "Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna."
+            return "Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.\n"
         return("=====================================\n" +
         str(self.db_manager.filter_references_db(choices)) + "\n" +
         "=====================================\n")

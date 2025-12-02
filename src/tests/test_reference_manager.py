@@ -224,3 +224,9 @@ class TestReferenceManager(unittest.TestCase):
                          "=====================================\n" +
                          "None\n" +
                          "=====================================\n")
+
+
+    def test_filter_references_bad_input(self):
+        """Testataan palauttaako virheen yritettäessä laittaa huonoa syötettä."""
+        self.assertEqual(self.ref.filter_references("lol"),
+                         "Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.\n")

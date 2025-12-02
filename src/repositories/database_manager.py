@@ -438,6 +438,9 @@ class DatabaseManager:
 
 
         # Käydään valitut luokat läpi TODO Logiikka alla kesken
+        # TODO Olisiko mahdollista saada tulostuksen sijasta
+        # palautus stringinä? Helpompi testata. Muut luokat
+        # muutettu palautettavan stringin logiikalle. -Joonatan
         for cls_name in selected_classes:
 
             fetch_func, cls_type = fetch_map[cls_name]
