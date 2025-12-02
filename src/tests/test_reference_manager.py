@@ -25,7 +25,8 @@ class TestReferenceManager(unittest.TestCase):
             author="Test author1",
             title="Test title1",
             year=2021,
-            publisher="Test publisher1"
+            publisher="Test publisher1",
+            tags=["hieno", "mahtava"]
         )
 
         # Lisättävä artikkeli
@@ -36,7 +37,8 @@ class TestReferenceManager(unittest.TestCase):
             journal="Test journal2",
             year=2022,
             volume="2",
-            pages="2"
+            pages="2",
+            tags=["mahtava"]
         )
 
         # Lisättävä konferenssijulkaisu
@@ -45,7 +47,7 @@ class TestReferenceManager(unittest.TestCase):
             author="Test author3",
             title="Test title3",
             year=2023,
-            booktitle="Test booktitle3"
+            booktitle="Test booktitle3",
         )
 
 
@@ -60,10 +62,11 @@ class TestReferenceManager(unittest.TestCase):
         "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
         "tagit: \n\n\n" +
         "Articles:\n" +
-        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n\n"
+        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n" +
+        "tagit: mahtava\n\n\n"
         "Books:\n" +
         "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n" +
-        "tagit: \n\n")
+        "tagit: hieno, mahtava\n\n")
 
 
     def test_export_bibtex(self):
@@ -97,7 +100,8 @@ class TestReferenceManager(unittest.TestCase):
         "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
         "tagit: \n\n\n" +
         "Articles:\n" +
-        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n\n" +
+        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n" +
+        "tagit: mahtava\n\n\n"
         "Books:\n")
 
 
@@ -108,10 +112,11 @@ class TestReferenceManager(unittest.TestCase):
         "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
         "tagit: \n\n\n" +
         "Articles:\n" +
-        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n\n" +
+        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n" +
+        "tagit: mahtava\n\n\n"
         "Books:\n" +
         "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n" +
-        "tagit: \n\n")
+        "tagit: hieno, mahtava\n\n")
 
 
     def test_edit_entry(self):
@@ -121,10 +126,11 @@ class TestReferenceManager(unittest.TestCase):
         "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
         "tagit: \n\n\n" +
         "Articles:\n" +
-        "(1, 'TEST2', 'Pyyttoni', 'Test title2', 'Test journal2', 1899, 2, '2')\n\n" +
+        "(1, 'TEST2', 'Pyyttoni', 'Test title2', 'Test journal2', 1899, 2, '2')\n" +
+        "tagit: mahtava\n\n\n"
         "Books:\n" +
         "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n" +
-        "tagit: \n\n")
+        "tagit: hieno, mahtava\n\n")
 
 
     def test_entry_info_finds(self):
