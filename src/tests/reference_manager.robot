@@ -14,3 +14,11 @@ Add Article And Verify
 Add Inproceeding And Verify
     Add Inproceeding To Database    INP1    Author Three    Title Three    2023    INP Booktitle    tag4,tag5
     Verify Reference In Database    INP1
+
+List Shows Multiple References
+    Add Book To Database    BOOK2    A    T    2021    P
+    Add Article To Database    ART1    A2    T2    J    2022    1    10
+    Add Inproceeding To Database    INP1    A3    T3    2023    B
+
+    Verify Reference In Database  BOOK2
+

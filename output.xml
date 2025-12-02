@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot generator="Robot 7.3.2 (Python 3.13.7 on win32)" generated="2025-12-02T16:23:45.504421" rpa="false" schemaversion="5">
+<robot generator="Robot 7.3.2 (Python 3.13.7 on win32)" generated="2025-12-02T18:51:58.204910" rpa="false" schemaversion="5">
 <suite id="s1" name="Tests" source="C:\kurssit\ohjelmistotuotanto\projekti\teka3003-lahdeviite-projekti\src\tests">
 <suite id="s1-s1" name="Reference Manager" source="C:\kurssit\ohjelmistotuotanto\projekti\teka3003-lahdeviite-projekti\src\tests\reference_manager.robot">
 <test id="s1-s1-t1" name="Add Single Book And Verify" line="6">
 <kw name="Setup Database And ReferenceManager" owner="resource" type="SETUP">
 <kw name="Setup Database" owner="ReferenceManagerLibrary">
 <doc>Tyhjentää testitietokannan ja luo ReferenceManagerin</doc>
-<status status="PASS" start="2025-12-02T16:23:45.588426" elapsed="0.153260"/>
+<status status="PASS" start="2025-12-02T18:51:58.305360" elapsed="0.149566"/>
 </kw>
-<status status="PASS" start="2025-12-02T16:23:45.587693" elapsed="0.154278"/>
+<status status="PASS" start="2025-12-02T18:51:58.303910" elapsed="0.151340"/>
 </kw>
 <kw name="Add Book To Database" owner="resource">
 <kw name="Add Book" owner="ReferenceManagerLibrary">
@@ -19,7 +19,7 @@
 <arg>${publisher}</arg>
 <arg>${tags}</arg>
 <doc>kirjan lisääminen</doc>
-<status status="PASS" start="2025-12-02T16:23:45.743858" elapsed="0.331834"/>
+<status status="PASS" start="2025-12-02T18:51:58.457481" elapsed="0.260591"/>
 </kw>
 <arg>BOOK1</arg>
 <arg>Author One</arg>
@@ -27,11 +27,11 @@
 <arg>2021</arg>
 <arg>Publisher One</arg>
 <arg>tag1,tag2</arg>
-<status status="PASS" start="2025-12-02T16:23:45.742451" elapsed="0.333557"/>
+<status status="PASS" start="2025-12-02T18:51:58.456113" elapsed="0.262463"/>
 </kw>
 <kw name="Verify Reference In Database" owner="resource">
 <kw name="Listaa" owner="ReferenceManagerLibrary">
-<msg time="2025-12-02T16:23:46.086503" level="INFO">${listing} = Inproceedings:
+<msg time="2025-12-02T18:51:58.728861" level="INFO">${listing} = Inproceedings:
 
 Articles:
 
@@ -42,26 +42,26 @@ tagit: t, a, g, 1, ,, 2
 </msg>
 <var>${listing}</var>
 <doc>listaus</doc>
-<status status="PASS" start="2025-12-02T16:23:46.077492" elapsed="0.009135"/>
+<status status="PASS" start="2025-12-02T18:51:58.720265" elapsed="0.008763"/>
 </kw>
 <kw name="Should Contain" owner="BuiltIn">
 <arg>${listing}</arg>
 <arg>${key}</arg>
 <doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
-<status status="PASS" start="2025-12-02T16:23:46.086963" elapsed="0.000480"/>
+<status status="PASS" start="2025-12-02T18:51:58.729414" elapsed="0.000828"/>
 </kw>
 <arg>BOOK1</arg>
-<status status="PASS" start="2025-12-02T16:23:46.076692" elapsed="0.010926"/>
+<status status="PASS" start="2025-12-02T18:51:58.719439" elapsed="0.011031"/>
 </kw>
-<status status="PASS" start="2025-12-02T16:23:45.586060" elapsed="0.501852"/>
+<status status="PASS" start="2025-12-02T18:51:58.300891" elapsed="0.429978"/>
 </test>
 <test id="s1-s1-t2" name="Add Article And Verify" line="10">
 <kw name="Setup Database And ReferenceManager" owner="resource" type="SETUP">
 <kw name="Setup Database" owner="ReferenceManagerLibrary">
 <doc>Tyhjentää testitietokannan ja luo ReferenceManagerin</doc>
-<status status="PASS" start="2025-12-02T16:23:46.090047" elapsed="0.141930"/>
+<status status="PASS" start="2025-12-02T18:51:58.734212" elapsed="0.106278"/>
 </kw>
-<status status="PASS" start="2025-12-02T16:23:46.089513" elapsed="0.142702"/>
+<status status="PASS" start="2025-12-02T18:51:58.733431" elapsed="0.107285"/>
 </kw>
 <kw name="Add Article To Database" owner="resource">
 <kw name="Add Article" owner="ReferenceManagerLibrary">
@@ -74,7 +74,7 @@ tagit: t, a, g, 1, ,, 2
 <arg>${pages}</arg>
 <arg>${tags}</arg>
 <doc>artikkelin lisääminen</doc>
-<status status="PASS" start="2025-12-02T16:23:46.233803" elapsed="0.122478"/>
+<status status="PASS" start="2025-12-02T18:51:58.843523" elapsed="0.200699"/>
 </kw>
 <arg>ART1</arg>
 <arg>Author Two</arg>
@@ -84,39 +84,41 @@ tagit: t, a, g, 1, ,, 2
 <arg>1</arg>
 <arg>10</arg>
 <arg>tag3</arg>
-<status status="PASS" start="2025-12-02T16:23:46.232656" elapsed="0.123946"/>
+<status status="PASS" start="2025-12-02T18:51:58.841595" elapsed="0.202944"/>
 </kw>
 <kw name="Verify Reference In Database" owner="resource">
 <kw name="Listaa" owner="ReferenceManagerLibrary">
-<msg time="2025-12-02T16:23:46.363128" level="INFO">${listing} = Inproceedings:
+<msg time="2025-12-02T18:51:59.057125" level="INFO">${listing} = Inproceedings:
 
 Articles:
 (1, 'ART1', 'Author Two', 'Title Two', 'Journal One', 2022, 1, '10')
+tagit: t, a, g, 3
+
 
 Books:
 </msg>
 <var>${listing}</var>
 <doc>listaus</doc>
-<status status="PASS" start="2025-12-02T16:23:46.357914" elapsed="0.005331"/>
+<status status="PASS" start="2025-12-02T18:51:59.046895" elapsed="0.010351"/>
 </kw>
 <kw name="Should Contain" owner="BuiltIn">
 <arg>${listing}</arg>
 <arg>${key}</arg>
 <doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
-<status status="PASS" start="2025-12-02T16:23:46.363651" elapsed="0.000612"/>
+<status status="PASS" start="2025-12-02T18:51:59.057680" elapsed="0.000663"/>
 </kw>
 <arg>ART1</arg>
-<status status="PASS" start="2025-12-02T16:23:46.357115" elapsed="0.007377"/>
+<status status="PASS" start="2025-12-02T18:51:59.045167" elapsed="0.013389"/>
 </kw>
-<status status="PASS" start="2025-12-02T16:23:46.088554" elapsed="0.276435"/>
+<status status="PASS" start="2025-12-02T18:51:58.731924" elapsed="0.326950"/>
 </test>
 <test id="s1-s1-t3" name="Add Inproceeding And Verify" line="14">
 <kw name="Setup Database And ReferenceManager" owner="resource" type="SETUP">
 <kw name="Setup Database" owner="ReferenceManagerLibrary">
 <doc>Tyhjentää testitietokannan ja luo ReferenceManagerin</doc>
-<status status="PASS" start="2025-12-02T16:23:46.369560" elapsed="0.083782"/>
+<status status="PASS" start="2025-12-02T18:51:59.062635" elapsed="0.086989"/>
 </kw>
-<status status="PASS" start="2025-12-02T16:23:46.368089" elapsed="0.085492"/>
+<status status="PASS" start="2025-12-02T18:51:59.060879" elapsed="0.088981"/>
 </kw>
 <kw name="Add Inproceeding To Database" owner="resource">
 <kw name="Add Inproceeding" owner="ReferenceManagerLibrary">
@@ -127,7 +129,7 @@ Books:
 <arg>${booktitle}</arg>
 <arg>${tags}</arg>
 <doc>inproceedings lisääminen</doc>
-<status status="PASS" start="2025-12-02T16:23:46.454958" elapsed="0.187756"/>
+<status status="PASS" start="2025-12-02T18:51:59.151265" elapsed="0.197817"/>
 </kw>
 <arg>INP1</arg>
 <arg>Author Three</arg>
@@ -135,11 +137,11 @@ Books:
 <arg>2023</arg>
 <arg>INP Booktitle</arg>
 <arg>tag4,tag5</arg>
-<status status="PASS" start="2025-12-02T16:23:46.454034" elapsed="0.189121"/>
+<status status="PASS" start="2025-12-02T18:51:59.150213" elapsed="0.199178"/>
 </kw>
 <kw name="Verify Reference In Database" owner="resource">
 <kw name="Listaa" owner="ReferenceManagerLibrary">
-<msg time="2025-12-02T16:23:46.652748" level="INFO">${listing} = Inproceedings:
+<msg time="2025-12-02T18:51:59.359176" level="INFO">${listing} = Inproceedings:
 (1, 'INP1', 'Author Three', 'Title Three', 2023, 'INP Booktitle')
 tagit: t, a, g, 4, ,, 5
 
@@ -150,32 +152,130 @@ Books:
 </msg>
 <var>${listing}</var>
 <doc>listaus</doc>
-<status status="PASS" start="2025-12-02T16:23:46.644509" elapsed="0.008352"/>
+<status status="PASS" start="2025-12-02T18:51:59.350677" elapsed="0.008608"/>
 </kw>
 <kw name="Should Contain" owner="BuiltIn">
 <arg>${listing}</arg>
 <arg>${key}</arg>
 <doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
-<status status="PASS" start="2025-12-02T16:23:46.653200" elapsed="0.000440"/>
+<status status="PASS" start="2025-12-02T18:51:59.359574" elapsed="0.000525"/>
 </kw>
 <arg>INP1</arg>
-<status status="PASS" start="2025-12-02T16:23:46.643649" elapsed="0.010206"/>
+<status status="PASS" start="2025-12-02T18:51:59.349895" elapsed="0.010468"/>
 </kw>
-<status status="PASS" start="2025-12-02T16:23:46.366485" elapsed="0.287683"/>
+<status status="PASS" start="2025-12-02T18:51:59.059861" elapsed="0.300859"/>
 </test>
-<status status="PASS" start="2025-12-02T16:23:45.557672" elapsed="1.097368"/>
+<test id="s1-s1-t4" name="List Shows Multiple References" line="18">
+<kw name="Setup Database And ReferenceManager" owner="resource" type="SETUP">
+<kw name="Setup Database" owner="ReferenceManagerLibrary">
+<doc>Tyhjentää testitietokannan ja luo ReferenceManagerin</doc>
+<status status="PASS" start="2025-12-02T18:51:59.363102" elapsed="0.087043"/>
+</kw>
+<status status="PASS" start="2025-12-02T18:51:59.362492" elapsed="0.087969"/>
+</kw>
+<kw name="Add Book To Database" owner="resource">
+<kw name="Add Book" owner="ReferenceManagerLibrary">
+<arg>${key}</arg>
+<arg>${author}</arg>
+<arg>${title}</arg>
+<arg>${year}</arg>
+<arg>${publisher}</arg>
+<arg>${tags}</arg>
+<doc>kirjan lisääminen</doc>
+<status status="PASS" start="2025-12-02T18:51:59.452724" elapsed="0.015989"/>
+</kw>
+<arg>BOOK2</arg>
+<arg>A</arg>
+<arg>T</arg>
+<arg>2021</arg>
+<arg>P</arg>
+<status status="PASS" start="2025-12-02T18:51:59.451042" elapsed="0.017928"/>
+</kw>
+<kw name="Add Article To Database" owner="resource">
+<kw name="Add Article" owner="ReferenceManagerLibrary">
+<arg>${key}</arg>
+<arg>${author}</arg>
+<arg>${title}</arg>
+<arg>${journal}</arg>
+<arg>${year}</arg>
+<arg>${volume}</arg>
+<arg>${pages}</arg>
+<arg>${tags}</arg>
+<doc>artikkelin lisääminen</doc>
+<status status="PASS" start="2025-12-02T18:51:59.470654" elapsed="0.016703"/>
+</kw>
+<arg>ART1</arg>
+<arg>A2</arg>
+<arg>T2</arg>
+<arg>J</arg>
+<arg>2022</arg>
+<arg>1</arg>
+<arg>10</arg>
+<status status="PASS" start="2025-12-02T18:51:59.469426" elapsed="0.018210"/>
+</kw>
+<kw name="Add Inproceeding To Database" owner="resource">
+<kw name="Add Inproceeding" owner="ReferenceManagerLibrary">
+<arg>${key}</arg>
+<arg>${author}</arg>
+<arg>${title}</arg>
+<arg>${year}</arg>
+<arg>${booktitle}</arg>
+<arg>${tags}</arg>
+<doc>inproceedings lisääminen</doc>
+<status status="PASS" start="2025-12-02T18:51:59.489170" elapsed="0.013616"/>
+</kw>
+<arg>INP1</arg>
+<arg>A3</arg>
+<arg>T3</arg>
+<arg>2023</arg>
+<arg>B</arg>
+<status status="PASS" start="2025-12-02T18:51:59.488092" elapsed="0.015019"/>
+</kw>
+<kw name="Verify Reference In Database" owner="resource">
+<kw name="Listaa" owner="ReferenceManagerLibrary">
+<msg time="2025-12-02T18:51:59.513267" level="INFO">${listing} = Inproceedings:
+(1, 'INP1', 'A3', 'T3', 2023, 'B')
+tagit: 
+
+
+Articles:
+(1, 'ART1', 'A2', 'T2', 'J', 2022, 1, '10')
+tagit: 
+
+
+Books:
+(1, 'BOOK2', 'A', 'T', 2021, 'P')
+tagit: 
+
+</msg>
+<var>${listing}</var>
+<doc>listaus</doc>
+<status status="PASS" start="2025-12-02T18:51:59.504977" elapsed="0.008360"/>
+</kw>
+<kw name="Should Contain" owner="BuiltIn">
+<arg>${listing}</arg>
+<arg>${key}</arg>
+<doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
+<status status="PASS" start="2025-12-02T18:51:59.513523" elapsed="0.000259"/>
+</kw>
+<arg>BOOK2</arg>
+<status status="PASS" start="2025-12-02T18:51:59.503990" elapsed="0.009891"/>
+</kw>
+<status status="PASS" start="2025-12-02T18:51:59.361389" elapsed="0.152657"/>
+</test>
+<status status="PASS" start="2025-12-02T18:51:58.270774" elapsed="1.244032"/>
 </suite>
-<status status="PASS" start="2025-12-02T16:23:45.508943" elapsed="1.147387"/>
+<status status="PASS" start="2025-12-02T18:51:58.209915" elapsed="1.307010"/>
 </suite>
 <statistics>
 <total>
-<stat pass="3" fail="0" skip="0">All Tests</stat>
+<stat pass="4" fail="0" skip="0">All Tests</stat>
 </total>
 <tag>
 </tag>
 <suite>
-<stat name="Tests" id="s1" pass="3" fail="0" skip="0">Tests</stat>
-<stat name="Reference Manager" id="s1-s1" pass="3" fail="0" skip="0">Tests.Reference Manager</stat>
+<stat name="Tests" id="s1" pass="4" fail="0" skip="0">Tests</stat>
+<stat name="Reference Manager" id="s1-s1" pass="4" fail="0" skip="0">Tests.Reference Manager</stat>
 </suite>
 </statistics>
 <errors>
