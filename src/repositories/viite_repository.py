@@ -20,7 +20,7 @@ class ReferenceManager:
             listing += str(row) + "\n"
             listing += (
                 "tagit: " 
-                + ", ".join(self.get_reference_tags("inproceeding", row[0])) 
+                + ", ".join(self.get_reference_tags("inproceeding", row[0]))
                 + "\n\n"
             )
 
@@ -93,7 +93,7 @@ class ReferenceManager:
         if tags is None:
             tags = []
         self.db_manager.insert_article(
-            Article(key, author, title, journal, year, volume, pages), 
+            Article(key, author, title, journal, year, volume, pages),
             tags
         )
 
