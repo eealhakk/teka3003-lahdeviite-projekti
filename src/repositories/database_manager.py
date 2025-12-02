@@ -378,17 +378,33 @@ class DatabaseManager:
         connection.close()
 
     def delete_entry(self, entry_type, target_key):
-        """Poistaa tietokannan merkinnän."""
+        """Poistaa tietokannan merkinnän ja siihen liitetyt tagit"""
+        table_map = {
+            "inproceeding": "inproceeding_tag",
+            "article": "article_tag",
+            "book": "book_tag",
+        }
+        link_table = table_map.get(entry_type)
+        if not link_table:
+            raise ValueError(f"Tuntematon entry_type: {entry_type}")
+
         connection = self.connect()
-        cursor = connection.cursor()
+        try:
+            cursor = connection.cursor()
 
-        poistettava = [target_key]
+            cursor.execute(f'SELECT id FROM {entry_type} WHERE "key" = ?', (target_key,))
+            row = cursor.fetchone()
+            if not row:
+                return False
+            ref_id = row[0]
 
-        query = f"DELETE FROM {entry_type} WHERE key = ?;"
-        cursor.execute(query, poistettava)
+            cursor.execute(f"DELETE FROM {link_table} WHERE reference_id = ?", (ref_id,))
+            cursor.execute(f'DELETE FROM {entry_type} WHERE id = ?', (ref_id,))
 
-        connection.commit()
-        connection.close()
+            connection.commit()
+            return True
+        finally:
+            connection.close()
 
     def filter_references_db(self, conditions): # pylint: disable=too-many-locals
         """Hakee tietokannasta avaimilla oikeat tiedot"""
