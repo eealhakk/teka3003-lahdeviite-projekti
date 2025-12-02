@@ -149,14 +149,14 @@ class DatabaseManager:
         if row:
             return row[0]
         return None
-    
+
     def get_or_create_tag(self, name):
         """Palauttaa tagin id:n tai luo uuden"""
         #jos tagi löytyy, palautetaan sen id
         tag_id = self.get_tag_id(name)
         if tag_id:
             return tag_id
-        
+
         #muuten luodaan uusi tagi
         conn = self.connect()
         cur = conn.cursor()
@@ -188,7 +188,7 @@ class DatabaseManager:
         conn.close()
 
         return tags
-    
+
     def get_references_by_tag(self, tag_name):
         """Hakee viitteet tagin perusteella"""
         tag_id = self.get_tag_id(tag_name)
@@ -302,12 +302,12 @@ class DatabaseManager:
             """
             INSERT INTO book (key, author, title, year, publisher)
             VALUES (?, ?, ?, ?, ?);
-            """, 
+            """,
             (
-                book.key, 
-                book.author, 
-                book.title, 
-                book.year, 
+                book.key,
+                book.author,
+                book.title,
+                book.year,
                 book.publisher
             )
         )

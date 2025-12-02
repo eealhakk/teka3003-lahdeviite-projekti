@@ -30,7 +30,7 @@ class ReferenceManager:
             listing += "tagit: " + ", ".join(self.get_reference_tags("book", row[0])) + "\n\n"
 
         return listing
-    
+
     def get_reference_tags(self, ref_type, reference_id):
         """Hakee viitteen tagit tietokannasta."""
         return self.db_manager.get_tags_for_ref(ref_type, reference_id)

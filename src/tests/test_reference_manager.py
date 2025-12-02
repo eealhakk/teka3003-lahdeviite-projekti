@@ -56,7 +56,7 @@ class TestReferenceManager(unittest.TestCase):
 
     def test_add_entries(self):
         """Tarkistetaan että setUpissa luodut lisättävät päätyivät tietokantaan"""
-        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n"+ 
+        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n"+
         "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
         "tagit: \n\n\n" +
         "Articles:\n" +

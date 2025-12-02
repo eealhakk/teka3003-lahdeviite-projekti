@@ -127,7 +127,7 @@ class App:
         if self.reference_manager.entry_info(ref_type, str(key)):
             self.io.write("Bibtex-koodi on jo käytössä!")
             return
-        
+
         def ask_tags():
             tags_input = self.io.read("Tagit (valinnainen, erottele pilkulla): ").strip()
             return [tag.strip() for tag in tags_input.split(",")] if tags_input else []
