@@ -242,8 +242,10 @@ class DatabaseManager:
         conn.close()
 
     # lisäykset tietokantaan
-    def insert_inproceeding(self, inproceeding, tags=[]):
+    def insert_inproceeding(self, inproceeding, tags=None):
         """Lisää inproceeding tietokantaan."""
+        if tags is None:
+            tags = []
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(
@@ -267,8 +269,10 @@ class DatabaseManager:
             self.add_tag_to_ref("inproceeding", new_id, tag)
         return new_id
 
-    def insert_article(self, article, tags=[]):
+    def insert_article(self, article, tags=None):
         """Lisää article tietokantaan."""
+        if tags is None:
+            tags = []
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(
@@ -294,8 +298,10 @@ class DatabaseManager:
             self.add_tag_to_ref("article", new_id, tag)
         return new_id
 
-    def insert_book(self, book, tags=[]):
+    def insert_book(self, book, tags=None):
         """Lisää book tietokantaan."""
+        if tags is None:
+            tags = []
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(

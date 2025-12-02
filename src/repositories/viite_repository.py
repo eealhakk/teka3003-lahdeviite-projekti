@@ -78,16 +78,22 @@ class ReferenceManager:
         """Poistaa tietyn viitteen tietokannassa."""
         self.db_manager.delete_entry(entry_type, target_key)
 
-    def add_book(self, key, author, title, year, publisher, tags=[]):
+    def add_book(self, key, author, title, year, publisher, tags=None):
         """lisää kirjan tietokantaan"""
+        if tags is None:
+            tags = []
         self.db_manager.insert_book(Book(key, author, title, year, publisher), tags)
 
-    def add_article(self, key, author, title, journal, year, volume, pages, tags=[]):
+    def add_article(self, key, author, title, journal, year, volume, pages, tags=None):
         """lisää artikkelin tietokantaan"""
+        if tags is None:
+            tags = []
         self.db_manager.insert_article(Article(key, author, title, journal, year, volume, pages), tags)
 
-    def add_inproceeding(self, key, author, title, year, booktitle, tags=[]):
+    def add_inproceeding(self, key, author, title, year, booktitle, tags=None):
         """lisää inproceedingin tietokantaan"""
+        if tags is None:
+            tags = []
         self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle), tags)
 
     def export_bibtex(self, filename): # pylint: disable=too-many-locals #TODO too many?
