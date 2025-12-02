@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 """Robot Framework -kirjasto ReferenceManager-luokan testaamiseen"""
 import os
 from repositories.viite_repository import ReferenceManager
@@ -15,14 +16,17 @@ class ReferenceManagerLibrary:
             os.remove(self.db_file)
         self.ref = ReferenceManager(self.db_file)
 
+    # pylint: disable=too-many-arguments, too-many-positional-arguments
     def add_book(self, key, author, title, year, publisher, tags=None):
         """kirjan lisääminen"""
         self.ref.add_book(key, author, title, year, publisher, tags)
 
+    # pylint: disable=too-many-arguments, too-many-positional-arguments
     def add_article(self, key, author, title, journal, year, volume, pages, tags=None):
         """artikkelin lisääminen"""
         self.ref.add_article(key, author, title, journal, year, volume, pages, tags)
 
+    # pylint: disable=too-many-arguments, too-many-positional-arguments
     def add_inproceeding(self, key, author, title, year, booktitle, tags=None):
         """inproceedings lisääminen"""
         self.ref.add_inproceeding(key, author, title, year, booktitle, tags)
@@ -47,4 +51,3 @@ class ReferenceManagerLibrary:
             content = f.read()
         if text not in content:
             raise AssertionError(f"'{text}' not found in BibTeX file")
-
