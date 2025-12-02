@@ -12,7 +12,7 @@ class App:
         while True:
             self.io.write("\n=== Valitse toiminto ===")
             self.io.write("1) Lisää uusi viite")
-            self.io.write("2) Listaa kaikki viitteet")
+            self.io.write("2) Listaa viitteet")
             self.io.write("3) Vie BibTeX-tiedosto")
             self.io.write("4) Muokkaa viitettä")
             self.io.write("5) Poista viite")
