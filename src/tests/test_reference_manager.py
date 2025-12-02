@@ -5,6 +5,9 @@ from repositories.viite_repository import ReferenceManager
 
 class TestReferenceManager(unittest.TestCase):
     """Testaa ReferenceManager-luokan toiminnallisuuksia."""
+
+    maxDiff = None
+
     def setUp(self):
         """Luodaan testisetuppi ReferenceManagerin testaamiseksi."""
         # Poistetaan väliaikainen tietokantatiedosto, jos sellainen on jääny
@@ -25,7 +28,8 @@ class TestReferenceManager(unittest.TestCase):
             author="Test author1",
             title="Test title1",
             year=2021,
-            publisher="Test publisher1"
+            publisher="Test publisher1",
+            tags=["hieno", "mahtava"]
         )
 
         # Lisättävä artikkeli
@@ -36,7 +40,8 @@ class TestReferenceManager(unittest.TestCase):
             journal="Test journal2",
             year=2022,
             volume="2",
-            pages="2"
+            pages="2",
+            tags=["mahtava"]
         )
 
         # Lisättävä konferenssijulkaisu
@@ -45,7 +50,7 @@ class TestReferenceManager(unittest.TestCase):
             author="Test author3",
             title="Test title3",
             year=2023,
-            booktitle="Test booktitle3"
+            booktitle="Test booktitle3",
         )
 
 
@@ -56,12 +61,66 @@ class TestReferenceManager(unittest.TestCase):
 
     def test_add_entries(self):
         """Tarkistetaan että setUpissa luodut lisättävät päätyivät tietokantaan"""
-        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n" +
-        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n\n" +
+        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n"+
+        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
+        "tagit: \n\n\n" +
         "Articles:\n" +
-        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n\n" +
+        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n" +
+        "tagit: mahtava\n\n\n"
         "Books:\n" +
-        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
+        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n" +
+        "tagit: hieno, mahtava\n\n")
+
+
+    def test_add_entries_with_and_without_tags(self):
+        """Luodaan tageilla ja tageitta olevia entryjä, että tulee testattua
+        koodin 'if tags is None' -rivien haarautumiset."""
+
+        # Lisättävä kirja
+        self.ref.add_book(
+            key="TEST4",
+            author="Test author4",
+            title="Test title4",
+            year=2024,
+            publisher="Test publisher4"
+        )
+
+        # Lisättävä artikkeli
+        self.ref.add_article(
+            key="TEST5",
+            author="Test author5",
+            title="Test title5",
+            journal="Test journal5",
+            year=2025,
+            volume="5",
+            pages="5"
+        )
+
+        # Lisättävä konferenssijulkaisu
+        self.ref.add_inproceeding(
+            key="TEST6",
+            author="Test author6",
+            title="Test title6",
+            year=2026,
+            booktitle="Test booktitle6",
+            tags=["Mahtava", "HIENO", "Huikea"]
+        )
+
+        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n"+
+        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
+        "tagit: \n\n" +
+        "(2, 'TEST6', 'Test author6', 'Test title6', 2026, 'Test booktitle6')\n" +
+        "tagit: Mahtava, HIENO, Huikea\n\n\n" +
+        "Articles:\n" +
+        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n" +
+        "tagit: mahtava\n\n" +
+        "(2, 'TEST5', 'Test author5', 'Test title5', 'Test journal5', 2025, 5, '5')\n" +
+        "tagit: \n\n\n" +
+        "Books:\n" +
+        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n" +
+        "tagit: hieno, mahtava\n\n" +
+        "(2, 'TEST4', 'Test author4', 'Test title4', 2024, 'Test publisher4')\n" +
+        "tagit: \n\n")
 
 
     def test_export_bibtex(self):
@@ -92,9 +151,11 @@ class TestReferenceManager(unittest.TestCase):
         """Testataan viite_repositoryn delete_entry-metodia niin että poistettava löytyy."""
         self.ref.delete_entry("book", "TEST1")
         self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n" +
-        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n\n" +
+        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
+        "tagit: \n\n\n" +
         "Articles:\n" +
-        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n\n" +
+        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n" +
+        "tagit: mahtava\n\n\n"
         "Books:\n")
 
 
@@ -102,22 +163,28 @@ class TestReferenceManager(unittest.TestCase):
         """Testataan viite_repositoryn delete_entry-metodia että poistettava ei löydy."""
         self.ref.delete_entry("book", "TEST2")
         self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n" +
-        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n\n" +
+        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
+        "tagit: \n\n\n" +
         "Articles:\n" +
-        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n\n" +
+        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n" +
+        "tagit: mahtava\n\n\n"
         "Books:\n" +
-        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
+        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n" +
+        "tagit: hieno, mahtava\n\n")
 
 
     def test_edit_entry(self):
         """Testataan viite_repositoryn edit_entry-metodia, että osaa muokata."""
         self.ref.edit_entry("article", "TEST2", author="Pyyttoni", year=1899)
         self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n" +
-        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n\n" +
+        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
+        "tagit: \n\n\n" +
         "Articles:\n" +
-        "(1, 'TEST2', 'Pyyttoni', 'Test title2', 'Test journal2', 1899, 2, '2')\n\n" +
+        "(1, 'TEST2', 'Pyyttoni', 'Test title2', 'Test journal2', 1899, 2, '2')\n" +
+        "tagit: mahtava\n\n\n"
         "Books:\n" +
-        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n")
+        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n" +
+        "tagit: hieno, mahtava\n\n")
 
 
     def test_entry_info_finds(self):

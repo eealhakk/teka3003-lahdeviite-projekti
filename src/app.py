@@ -23,15 +23,7 @@ class App:
             if choice == "1":
                 self.add_reference()
             elif choice == "2":
-                self.io.write("(0) Listaa kaikki    (3) Book         (6) Title       (9) Volume") # pylint: disable=line-too-long
-                self.io.write("(1) Inproceedings    (4) Key          (7) Year        (10) Pages") # pylint: disable=line-too-long
-                self.io.write("(2) Article          (5) Author       (8) Publisher   (11) Booktitle") # pylint: disable=line-too-long
-                value = self.io.read("Syötä yksi tai useampi erotettuna pilkulla: ").strip()
-                if value != '0':
-                    self.reference_manager.filter_references(value)
-                else:
-                    print(self.reference_manager.listaa())
-
+                self.list_references()
             elif choice == "3":
                 self.reference_manager.export_bibtex("references.bib")
                 self.io.write("BibTeX-tiedosto references.bib luotu")
@@ -43,6 +35,30 @@ class App:
                 break
             else:
                 self.io.write("Virheellinen valinta")
+
+    def list_references(self):
+        """Metodi viitteiden listaamiseen"""
+        self.io.write("\n1) Listaa tagin perusteella")
+        self.io.write("2) Listaa kaikki\n")
+        value = self.io.read("Valinta: ").strip()
+
+        if value == "1":
+            search_tag = str(self.io.read("Anna tagi: ").strip())
+            found_references = self.reference_manager.get_references_by_tag(search_tag)
+
+            if not found_references:
+                self.io.write("Ei löytyneitä viitteitä tälle tagille.")
+                return
+
+            listing = f"Löydetyt viitteet tagille '{search_tag}':\n\n"
+            for ref in found_references:
+                ref_object = self.reference_manager.entry_info(ref[0], str(ref[1][1]))
+                listing += str(ref_object) + "\n\n"
+            self.io.write("\n"+listing)
+        elif value == "2":
+            print(self.reference_manager.listaa())
+        else:
+            self.io.write("Virheellinen valinta")
 
     def delete_reference(self):
         """Metodi lähteen poistamiseen"""
@@ -75,15 +91,15 @@ class App:
             return
 
         key_editing = self.io.read("Anna muokattavan viitteen BibTeX-avain: ").strip()
-        muokattava = self.reference_manager.entry_info(ref_type, str(key_editing))
+        ref_editing = self.reference_manager.entry_info(ref_type, str(key_editing))
 
-        if not muokattava:
+        if not ref_editing:
             self.io.write("Viitettä ei löydy.")
             return
-        self.io.write("\n"+str(muokattava)+"\n")
+        self.io.write("\n"+str(ref_editing)+"\n")
 
         fields = self.io.read("Anna kentät, joita haluat muokata erotettuna pilkulla: ").strip()
-        allowed_fields = vars(muokattava).keys()
+        allowed_fields = vars(ref_editing).keys()
 
         for field in fields.split(","):
             field = field.strip()
@@ -112,12 +128,17 @@ class App:
             self.io.write("Bibtex-koodi on jo käytössä!")
             return
 
+        def ask_tags():
+            tags_input = self.io.read("Tagit (valinnainen, erottele pilkulla): ").strip()
+            return [tag.strip() for tag in tags_input.split(",")] if tags_input else []
+
         if ref_type == "inproceeding":
             author = self.io.read("Author: ").strip()
             title = self.io.read("Title: ").strip()
             year = self.io.read("Year: ").strip()
             booktitle = self.io.read("Booktitle: ").strip()
-            self.reference_manager.add_inproceeding(key, author, title, year, booktitle)
+            tags = ask_tags()
+            self.reference_manager.add_inproceeding(key, author, title, year, booktitle, tags)
 
         elif ref_type == "article":
             author = self.io.read("Author: ").strip()
@@ -126,14 +147,18 @@ class App:
             year = self.io.read("Year: ").strip()
             volume = self.io.read("Volume: ").strip()
             pages = self.io.read("Pages: ").strip()
-            self.reference_manager.add_article(key, author, title, journal, year, volume, pages)
+            tags = ask_tags()
+            self.reference_manager.add_article(
+                key, author, title, journal, year, volume, pages, tags
+            )
 
         elif ref_type == "book":
             author = self.io.read("Author: ").strip()
             title = self.io.read("Title: ").strip()
             year = self.io.read("Year: ").strip()
             publisher = self.io.read("Publisher: ").strip()
-            self.reference_manager.add_book(key, author, title, year, publisher)
+            tags = ask_tags()
+            self.reference_manager.add_book(key, author, title, year, publisher, tags)
 
         self.io.write(f"{ref_type}-viite lisätty!")
 

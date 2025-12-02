@@ -18,16 +18,36 @@ class ReferenceManager:
         listing = "Inproceedings:\n"
         for row in inproceedings:
             listing += str(row) + "\n"
+            listing += (
+                "tagit: " 
+                + ", ".join(self.get_reference_tags("inproceeding", row[0]))
+                + "\n\n"
+            )
 
         listing += "\nArticles:\n"
         for row in articles:
             listing += str(row) + "\n"
+            listing += (
+                "tagit: " 
+                + ", ".join(self.get_reference_tags("article", row[0]))
+                + "\n\n"
+            )
+
 
         listing += "\nBooks:\n"
         for row in books:
             listing += str(row) + "\n"
+            listing += "tagit: " + ", ".join(self.get_reference_tags("book", row[0])) + "\n\n"
 
         return listing
+
+    def get_reference_tags(self, ref_type, reference_id):
+        """Hakee viitteen tagit tietokannasta."""
+        return self.db_manager.get_tags_for_ref(ref_type, reference_id)
+
+    def get_references_by_tag(self, tag_name):
+        """Hakee viitteet tietokannasta tagin perusteella."""
+        return self.db_manager.get_references_by_tag(tag_name)
 
     def filter_references(self, arvot):
         """Siistitään filter syötettä ja välitetään filtteröinti"""
@@ -68,17 +88,26 @@ class ReferenceManager:
         """Poistaa tietyn viitteen tietokannassa."""
         self.db_manager.delete_entry(entry_type, target_key)
 
-    def add_book(self, key, author, title, year, publisher):
+    def add_book(self, key, author, title, year, publisher, tags=None):
         """lisää kirjan tietokantaan"""
-        self.db_manager.insert_book(Book(key, author, title, year, publisher))
+        if tags is None:
+            tags = []
+        self.db_manager.insert_book(Book(key, author, title, year, publisher), tags)
 
-    def add_article(self, key, author, title, journal, year, volume, pages):
+    def add_article(self, key, author, title, journal, year, volume, pages, tags=None):
         """lisää artikkelin tietokantaan"""
-        self.db_manager.insert_article(Article(key, author, title, journal, year, volume, pages))
+        if tags is None:
+            tags = []
+        self.db_manager.insert_article(
+            Article(key, author, title, journal, year, volume, pages),
+            tags
+        )
 
-    def add_inproceeding(self, key, author, title, year, booktitle):
+    def add_inproceeding(self, key, author, title, year, booktitle, tags=None):
         """lisää inproceedingin tietokantaan"""
-        self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle))
+        if tags is None:
+            tags = []
+        self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle), tags)
 
     def export_bibtex(self, filename): # pylint: disable=too-many-locals #TODO too many?
         """Vie kaikki viitteet BibTeX-tiedostoon."""

@@ -50,7 +50,9 @@ class DatabaseManager:
 
     def connect(self):
         """Yhdistää tietokantaan."""
-        return sqlite3.connect(self.db_name)
+        conn = sqlite3.connect(self.db_name)
+        conn.execute("PRAGMA foreign_keys = ON;")
+        return conn
 
     def create_database(self):
         """Luo tarvittavat taulut tietokantaan, jos niitä ei ole."""
@@ -94,12 +96,156 @@ class DatabaseManager:
             publisher TEXT NOT NULL
         );
         """)
+
+        # tagit
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS tags (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL UNIQUE
+        );
+        """)
+
+        # tag yhdistetaulut
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS inproceeding_tag (
+            reference_id INTEGER NOT NULL,
+            tag_id INTEGER NOT NULL,
+            FOREIGN KEY (reference_id) REFERENCES inproceeding(id),
+            FOREIGN KEY (tag_id) REFERENCES tags(id),
+            PRIMARY KEY (reference_id, tag_id)
+        );
+        """)
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS article_tag (
+            reference_id INTEGER NOT NULL,
+            tag_id INTEGER NOT NULL,
+            FOREIGN KEY (reference_id) REFERENCES article(id),
+            FOREIGN KEY (tag_id) REFERENCES tags(id),
+            PRIMARY KEY (reference_id, tag_id)
+        );
+        """)
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS book_tag (
+            reference_id INTEGER NOT NULL,
+            tag_id INTEGER NOT NULL,
+            FOREIGN KEY (reference_id) REFERENCES book(id),
+            FOREIGN KEY (tag_id) REFERENCES tags(id),
+            PRIMARY KEY (reference_id, tag_id)
+        );
+        """)
+
         connection.commit()
         connection.close()
 
+    def get_tag_id(self, name):
+        """Hakee tagin id:n tagin nimen perusteella."""
+        conn = self.connect()
+        cur = conn.cursor()
+
+        cur.execute("SELECT id FROM tags WHERE name = ?;", (name,))
+        row = cur.fetchone()
+        conn.close()
+
+        if row:
+            return row[0]
+        return None
+
+    def get_or_create_tag(self, name):
+        """Palauttaa tagin id:n tai luo uuden"""
+        #jos tagi löytyy, palautetaan sen id
+        tag_id = self.get_tag_id(name)
+        if tag_id:
+            return tag_id
+
+        #muuten luodaan uusi tagi
+        conn = self.connect()
+        cur = conn.cursor()
+
+        cur.execute("INSERT INTO tags (name) VALUES (?);", (name,))
+        tag_id = cur.lastrowid
+        conn.commit()
+        conn.close()
+        return tag_id
+
+    def get_tags_for_ref(self, ref_type, reference_id):
+        """Hakee viitteen tagit tietokannasta"""
+        table_map = {
+            "inproceeding": "inproceeding_tag",
+            "article": "article_tag",
+            "book": "book_tag",
+        }
+        link_table = table_map[ref_type]
+
+        conn = self.connect()
+        cur = conn.cursor()
+        cur.execute(f"""
+            SELECT t.name
+            FROM tags t
+            JOIN {link_table} lt ON t.id = lt.tag_id
+            WHERE lt.reference_id = ?;
+        """, (reference_id,))
+        tags = [row[0] for row in cur.fetchall()]
+        conn.close()
+
+        return tags
+
+    def get_references_by_tag(self, tag_name):
+        """Hakee viitteet tagin perusteella"""
+        tag_id = self.get_tag_id(tag_name)
+        if not tag_id:
+            return []
+
+        conn = self.connect()
+        cur = conn.cursor()
+
+        results = []
+
+        table_map = {
+            "inproceeding": "inproceeding_tag",
+            "article": "article_tag",
+            "book": "book_tag",
+        }
+
+        for ref_type, link_table in table_map.items():
+            cur.execute(f"""
+                SELECT r.*
+                FROM {ref_type} r
+                JOIN {link_table} lt ON r.id = lt.reference_id
+                WHERE lt.tag_id = ?;
+            """, (tag_id,))
+            rows = cur.fetchall()
+            results.extend((ref_type, row) for row in rows)
+
+        conn.close()
+        return results
+
+    def add_tag_to_ref(self, ref_type, reference_id, tag_name):
+        """Liittää tagin viitteeseen"""
+        table_map = {
+            "inproceeding": "inproceeding_tag",
+            "article": "article_tag",
+            "book": "book_tag",
+        }
+        if ref_type not in table_map:
+            raise ValueError(f"Tuntematon tyyppi: {ref_type}")
+
+        tag_id = self.get_or_create_tag(tag_name)
+        link_table = table_map[ref_type]
+
+        conn = self.connect()
+        cur = conn.cursor()
+        cur.execute(
+            f"INSERT OR IGNORE INTO {link_table} (reference_id, tag_id) VALUES (?, ?);",
+            (reference_id, tag_id),
+        )
+        conn.commit()
+        conn.close()
+
     # lisäykset tietokantaan
-    def insert_inproceeding(self, inproceeding):
+    def insert_inproceeding(self, inproceeding, tags=None):
         """Lisää inproceeding tietokantaan."""
+        if tags is None:
+            tags = []
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(
@@ -115,11 +261,18 @@ class DatabaseManager:
                 inproceeding.booktitle,
             ),
         )
+        new_id = cursor.lastrowid
         connection.commit()
         connection.close()
 
-    def insert_article(self, article):
+        for tag in tags:
+            self.add_tag_to_ref("inproceeding", new_id, tag)
+        return new_id
+
+    def insert_article(self, article, tags=None):
         """Lisää article tietokantaan."""
+        if tags is None:
+            tags = []
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(
@@ -137,19 +290,39 @@ class DatabaseManager:
                 article.pages,
             ),
         )
+        new_id = cursor.lastrowid
         connection.commit()
         connection.close()
 
-    def insert_book(self, book):
+        for tag in tags:
+            self.add_tag_to_ref("article", new_id, tag)
+        return new_id
+
+    def insert_book(self, book, tags=None):
         """Lisää book tietokantaan."""
+        if tags is None:
+            tags = []
         connection = self.connect()
         cursor = connection.cursor()
-        cursor.execute("""
-        INSERT INTO book (key, author, title, year, publisher)
-        VALUES (?, ?, ?, ?, ?);
-        """, (book.key, book.author, book.title, book.year, book.publisher))
+        cursor.execute(
+            """
+            INSERT INTO book (key, author, title, year, publisher)
+            VALUES (?, ?, ?, ?, ?);
+            """,
+            (
+                book.key,
+                book.author,
+                book.title,
+                book.year,
+                book.publisher
+            )
+        )
+        new_id = cursor.lastrowid
         connection.commit()
         connection.close()
+        for tag in tags:
+            self.add_tag_to_ref("book", new_id, tag)
+        return new_id
 
     # haut tietokannasta
     def get_inproceedings(self, key=None):
@@ -205,17 +378,33 @@ class DatabaseManager:
         connection.close()
 
     def delete_entry(self, entry_type, target_key):
-        """Poistaa tietokannan merkinnän."""
+        """Poistaa tietokannan merkinnän ja siihen liitetyt tagit"""
+        table_map = {
+            "inproceeding": "inproceeding_tag",
+            "article": "article_tag",
+            "book": "book_tag",
+        }
+        link_table = table_map.get(entry_type)
+        if not link_table:
+            raise ValueError(f"Tuntematon entry_type: {entry_type}")
+
         connection = self.connect()
-        cursor = connection.cursor()
+        try:
+            cursor = connection.cursor()
 
-        poistettava = [target_key]
+            cursor.execute(f'SELECT id FROM {entry_type} WHERE "key" = ?', (target_key,))
+            row = cursor.fetchone()
+            if not row:
+                return False
+            ref_id = row[0]
 
-        query = f"DELETE FROM {entry_type} WHERE key = ?;"
-        cursor.execute(query, poistettava)
+            cursor.execute(f"DELETE FROM {link_table} WHERE reference_id = ?", (ref_id,))
+            cursor.execute(f'DELETE FROM {entry_type} WHERE id = ?', (ref_id,))
 
-        connection.commit()
-        connection.close()
+            connection.commit()
+            return True
+        finally:
+            connection.close()
 
     def filter_references_db(self, conditions): # pylint: disable=too-many-locals
         """Hakee tietokannasta avaimilla oikeat tiedot"""
