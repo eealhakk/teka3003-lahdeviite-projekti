@@ -214,3 +214,13 @@ class TestReferenceManager(unittest.TestCase):
                          "[('article', (1, 'TEST2', 'Test author2', 'Test title2', " +
                          "'Test journal2', 2022, 2, '2')), ('book', (1, 'TEST1', " +
                          "'Test author1', 'Test title1', 2021, 'Test publisher1'))]")
+
+
+    def test_filter_references(self):
+        """Testataan palauttaako halutun asian (kuten key, year tai author) lähteistä.
+        NÄYTTÄÄ, ETTÄ database_manger.py:SSÄ TOTEUTUS KESKEN?!?!"""
+        #TOIMII NYT TOIMIMATTOMAN OMINAISUUDEN MUKAAN!
+        self.assertEqual(self.ref.filter_references("7, 5"),
+                         "=====================================\n" +
+                         "None\n" +
+                         "=====================================\n")

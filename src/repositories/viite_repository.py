@@ -55,11 +55,10 @@ class ReferenceManager:
             # Muutetaan syöte listaksi kokonaislukuja
             choices = [int(x.strip()) for x in arvot.split(",")]
         except ValueError:
-            print("Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.")
-            return
-        print("=====================================")
-        print (self.db_manager.filter_references_db(choices))
-        print("=====================================")
+            return "Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna."
+        return("=====================================\n" +
+        str(self.db_manager.filter_references_db(choices)) + "\n" +
+        "=====================================\n")
 
     def entry_info(self, entry_type, target_key):
         """Hakee tietyn viitteen tiedot tietokannasta."""
