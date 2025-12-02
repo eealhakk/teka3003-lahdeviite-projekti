@@ -64,7 +64,7 @@ class App:
             self.io.write("(1) Inproceedings    (4) Key          (7) Year        (10) Pages") # pylint: disable=line-too-long
             self.io.write("(2) Article          (5) Author       (8) Publisher   (11) Booktitle") # pylint: disable=bad-indentation
             givenvalue = self.io.read("Syötä yksi tai useampi erotettuna pilkulla: ").strip()
-            self.reference_manager.filter_references(givenvalue)
+            print(self.reference_manager.filter_references(givenvalue))
         else:
             self.io.write("Virheellinen valinta")
 
