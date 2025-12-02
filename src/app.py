@@ -39,7 +39,9 @@ class App:
     def list_references(self):
         """Metodi viitteiden listaamiseen"""
         self.io.write("\n1) Listaa tagin perusteella")
-        self.io.write("2) Listaa kaikki\n")
+        self.io.write("2) Listaa kaikki")
+        self.io.write("3) Filtteri\n")
+
         value = self.io.read("Valinta: ").strip()
 
         if value == "1":
@@ -57,6 +59,12 @@ class App:
             self.io.write("\n"+listing)
         elif value == "2":
             print(self.reference_manager.listaa())
+        elif value == "3":
+            self.io.write("(0) Listaa kaikki    (3) Book         (6) Title       (9) Volume") # pylint: disable=line-too-long
+            self.io.write("(1) Inproceedings    (4) Key          (7) Year        (10) Pages") # pylint: disable=line-too-long
+            self.io.write("(2) Article          (5) Author       (8) Publisher   (11) Booktitle") # pylint: disable=bad-indentation
+            givenvalue = self.io.read("Syötä yksi tai useampi erotettuna pilkulla: ").strip()
+            self.reference_manager.filter_references(givenvalue)
         else:
             self.io.write("Virheellinen valinta")
 

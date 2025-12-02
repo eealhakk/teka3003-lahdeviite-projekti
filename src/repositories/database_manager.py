@@ -436,6 +436,7 @@ class DatabaseManager:
             "book": (self.get_books, Book),
         }
 
+
         # Käydään valitut luokat läpi TODO Logiikka alla kesken
         for cls_name in selected_classes:
 
