@@ -210,7 +210,7 @@ class TestReferenceManager(unittest.TestCase):
 
     def test_get_references_by_tag(self):
         """Testataan kaikki halutun tagin omaavien viitteiden hakeminen"""
-        self.assertEqual(str(self.ref.get_references_by_tag("mahtava"))
+        self.assertEqual(str(self.ref.get_references_by_tag("mahtava")),
                          "[('article', (1, 'TEST2', 'Test author2', 'Test title2', " +
                          "'Test journal2', 2022, 2, '2')), ('book', (1, 'TEST1', " +
                          "'Test author1', 'Test title1', 2021, 'Test publisher1'))]")
