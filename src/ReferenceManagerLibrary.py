@@ -8,12 +8,15 @@ class ReferenceManagerLibrary:
 
     def __init__(self):
         self.db_file = "robot_test.db"
+        self.bib_file = "robot_test_output.bib"
         self.ref = None
 
     def setup_database(self):
         """Tyhjentää testitietokannan ja luo ReferenceManagerin"""
         if os.path.exists(self.db_file):
             os.remove(self.db_file)
+        if os.path.exists(self.bib_file):
+            os.remove(self.bib_file)
         self.ref = ReferenceManager(self.db_file)
 
     # pylint: disable=too-many-arguments, too-many-positional-arguments
@@ -35,10 +38,13 @@ class ReferenceManagerLibrary:
         """listaus"""
         return self.ref.listaa()
 
-    def export_bibtex_file(self, filename="robot_test_output.bib"):
+    def export_bibtex_file(self, filename=None):
         """Vie viitteet BibTeX-tiedostoon"""
+        if filename is None:
+            filename = self.bib_file
+        else:
+            self.bib_file = filename  # päivitetään luokan attribuutti, jos annettu
         self.ref.export_bibtex(filename)
-        self.bib_file = filename
 
     def bib_file_should_exist(self):
         """Tarkistaa että BibTeX-tiedosto on luotu"""
