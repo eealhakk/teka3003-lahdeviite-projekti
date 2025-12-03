@@ -466,7 +466,6 @@ class DatabaseManager:
                             output_lines.append(f"{attr}: {value}")
                 else:
                     # Tulostetaan vain valitut attribuutit
-                    selected_output = []
                     #print(obj.__class__.__name__)
                     output_lines.append(obj.__class__.__name__)
                     output = []
