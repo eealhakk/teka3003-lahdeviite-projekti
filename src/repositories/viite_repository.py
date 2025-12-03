@@ -58,8 +58,10 @@ class ReferenceManager:
             print("Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.")
             return
         print("=====================================")
-        print (self.db_manager.filter_references_db(choices))
-        print("=====================================")
+        #print (self.db_manager.filter_references_db(choices))
+        result = self.db_manager.filter_references_db(choices)
+        print(result)
+        #print("=====================================")
 
     def entry_info(self, entry_type, target_key):
         """Hakee tietyn viitteen tiedot tietokannasta."""

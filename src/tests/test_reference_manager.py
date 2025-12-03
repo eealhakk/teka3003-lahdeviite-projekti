@@ -206,3 +206,17 @@ class TestReferenceManager(unittest.TestCase):
         """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia
         niin, ettei löydy haluttua kohdetta."""
         self.assertEqual(str(self.ref.entry_info("inproceeding", "TEST2")), "None")
+
+    def test_filter_references_basic(self):
+        """Testaa että filter_references_db palauttaa oikean stringin (Book + key + author)."""
+
+        # 3 = Book, 4 = key, 5 = author
+        result = self.ref.db_manager.filter_references_db([3, 4, 5])
+
+        self.assertIn("Book", result)
+
+        self.assertIn("key: TEST1", result)
+        self.assertIn("author: Test author1", result)
+
+        self.assertNotIn("year:", result)
+        self.assertNotIn("publisher:", result)

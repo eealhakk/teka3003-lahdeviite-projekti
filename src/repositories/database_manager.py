@@ -436,6 +436,7 @@ class DatabaseManager:
             "book": (self.get_books, Book),
         }
 
+        output_lines = []
 
         # Käydään valitut luokat läpi TODO Logiikka alla kesken
         for cls_name in selected_classes:
@@ -453,18 +454,25 @@ class DatabaseManager:
                 # Jos listataan kaikki tai attribuuteja ei ole erikseen valittu,
                 # tulostetaan koko objekti
                 if list_all or not selected_attributes:
-                    print(obj.__class__.__name__)
+                    #print(obj.__class__.__name__)
+                    output_lines.append(obj.__class__.__name__)
                     #print(obj)
                     for attr, value in obj.__dict__.items():
                         if not attr.startswith("_"):
-                            print(f"{attr}: {value}")
+                            #print(f"{attr}: {value}")
+                            output_lines.append(f"{attr}: {value}")
                 else:
                     # Tulostetaan vain valitut attribuutit
-                    print(obj.__class__.__name__)
+                    selected_output = []
+                    #print(obj.__class__.__name__)
+                    output_lines.append(obj.__class__.__name__)
                     output = []
                     for attr in selected_attributes:
                         if hasattr(obj, attr):
                             output.append(f"{attr}: {getattr(obj, attr)}")
-                    print(",\n".join(output))
+                    #print(",\n".join(output))
+                    output_lines.append(",\n".join(output))
+                    output_lines.append("=" * 40)
 
-                print("-"*40)
+                #print("-"*40)
+        return "\n".join(output_lines)
