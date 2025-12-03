@@ -22,3 +22,9 @@ List Shows Multiple References
 
     Verify Reference In Database  BOOK2
 
+Export Book To BibTeX
+    Add Book    BOOK1    Author One    Title One    2021    Publisher One
+    Export Bibtex File
+    Bib File Should Exist
+    Bib File Should Contain  @book{BOOK1,
+

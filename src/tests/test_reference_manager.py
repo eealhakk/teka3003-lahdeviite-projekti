@@ -207,7 +207,16 @@ class TestReferenceManager(unittest.TestCase):
         niin, ettei löydy haluttua kohdetta."""
         self.assertEqual(str(self.ref.entry_info("inproceeding", "TEST2")), "None")
 
-    def test_filter_references_basic(self):
+
+    def test_get_references_by_tag(self):
+        """Testataan kaikki halutun tagin omaavien viitteiden hakeminen"""
+        self.assertEqual(str(self.ref.get_references_by_tag("mahtava")),
+                         "[('article', (1, 'TEST2', 'Test author2', 'Test title2', " +
+                         "'Test journal2', 2022, 2, '2')), ('book', (1, 'TEST1', " +
+                         "'Test author1', 'Test title1', 2021, 'Test publisher1'))]")
+
+
+    def test_filter_references(self):
         """Testaa että filter_references_db palauttaa oikean stringin (Book + key + author)."""
 
         # 3 = Book, 4 = key, 5 = author
@@ -220,3 +229,9 @@ class TestReferenceManager(unittest.TestCase):
 
         self.assertNotIn("year:", result)
         self.assertNotIn("publisher:", result)
+
+
+    def test_filter_references_bad_input(self):
+        """Testataan palauttaako virheen yritettäessä laittaa huonoa syötettä."""
+        self.assertEqual(self.ref.filter_references("lol"),
+                         "Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.\n")

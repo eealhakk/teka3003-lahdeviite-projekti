@@ -61,8 +61,8 @@ class ReferenceManager:
         #print (self.db_manager.filter_references_db(choices))
         result = self.db_manager.filter_references_db(choices)
         print(result)
-        #print("=====================================")
-
+        return(str(self.db_manager.filter_references_db(choices)))
+    
     def entry_info(self, entry_type, target_key):
         """Hakee tietyn viitteen tiedot tietokannasta."""
         fetch_map = {

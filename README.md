@@ -23,7 +23,7 @@ _subject to change_
 
 - **Koodin katselmointi:** Tiimi käy läpi tehdyn koodin, ja etsii mahdollisia ongelmia tai parannuksen kohteita.
 
-- **Testien läpäisy:** Koodia on testattu tarpeeksi, ja tehdyt testit menevät läpi.
+- **Testien läpäisy:** Koodia on testattu tarpeeksi, ja tehdyt testit menevät läpi. (Robot framework hyväksymiskriteerit)
 
 ### Backlogit :scroll:
 
