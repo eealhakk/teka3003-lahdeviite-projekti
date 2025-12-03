@@ -56,7 +56,7 @@ class ReferenceManager:
             choices = [int(x.strip()) for x in arvot.split(",")]
         except ValueError:
             print("Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.")
-            return
+            return "Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.\n"
         print("=====================================")
         #print (self.db_manager.filter_references_db(choices))
         result = self.db_manager.filter_references_db(choices)
