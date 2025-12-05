@@ -11,8 +11,8 @@ VPL11 = Reference(
     other_fields={"author": "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
                    "title": "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
                    "year": 2011,
-                   "booktitle": ("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on "
-                                 "Computer science education")}
+                   "booktitle": ("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium "
+                                 "on Computer science education")}
 )
 
 CBH91 = Reference(
@@ -209,11 +209,11 @@ class DatabaseManager:
         connection = self.connect()
         cursor = connection.cursor()
         if ref_type and key:
-            cursor.execute("SELECT * FROM reference WHERE type = ? AND key = ?;", (ref_type, key))
-        if ref_type:
-            cursor.execute("SELECT * FROM reference WHERE type = ?;", (ref_type))
-        if key:
-            cursor.execute("SELECT * FROM reference WHERE key = ?;", (key))
+            cursor.execute("SELECT * FROM reference WHERE type = ? AND key = ?;", (ref_type, key,))
+        elif ref_type:
+            cursor.execute("SELECT * FROM reference WHERE type = ?;", (ref_type,))
+        elif key:
+            cursor.execute("SELECT * FROM reference WHERE key = ?;", (key,))
         else:
             cursor.execute("SELECT * FROM reference;")
         rows = cursor.fetchall()
@@ -221,19 +221,19 @@ class DatabaseManager:
         return rows
 
 
-    def get_inproceedings(self):
+    def get_inproceedings(self, key=None):
         """Hakee inproceedingit get_referenceä käyttäen."""
-        return self.get_reference("inproceeding")
+        return self.get_reference("inproceeding", key)
 
 
-    def get_articles(self):
+    def get_articles(self, key=None):
         """Hakee articlet get_referenceä käyttäen."""
-        return self.get_reference("article")
+        return self.get_reference("article", key)
 
 
-    def get_books(self):
+    def get_books(self, key=None):
         """Hakee bookit get_referenceä käyttäen."""
-        return self.get_reference("book")
+        return self.get_reference("book", key)
 
 
     # muokkaus tietokannassa
@@ -248,7 +248,7 @@ class DatabaseManager:
         if not row:
             conn.close()
             return False
-        
+
         raw = row[0] or "{}"
         try:
             other_fields = json.loads(raw)
