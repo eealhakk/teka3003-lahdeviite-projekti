@@ -178,29 +178,32 @@ class DatabaseManager:
         if not isinstance(other_fields, str):
             other_fields = json.dumps(other_fields)
 
-        connection = self.connect()
-        cursor = connection.cursor()
-        cursor.execute(
-            """
-            INSERT INTO reference (type, key, other_fields)
-            VALUES (?, ?, ?);
-            """,
-            (
-                reference.ref_type,
-                reference.key,
-                other_fields
-            ),
-        )
-        new_id = cursor.lastrowid
-        connection.commit()
-        connection.close()
+        try:
+            connection = self.connect()
+            cursor = connection.cursor()
+            cursor.execute(
+                """
+                INSERT INTO reference (type, key, other_fields)
+                VALUES (?, ?, ?);
+                """,
+                (
+                    reference.ref_type,
+                    reference.key,
+                    other_fields
+                ),
+            )
+            new_id = cursor.lastrowid
+            connection.commit()
+            connection.close()
 
-        for tag in tags:
-            self.add_tag_to_ref(new_id, tag)
-        return new_id
+            for tag in tags:
+                self.add_tag_to_ref(new_id, tag)
+            return new_id
+        except sqlite3.IntegrityError:
+            return False
 
     # haut tietokannasta
-    def get_reference(self, ref_type=None, key=None):
+    def get_reference(self, key=None, ref_type=None):
         """
         Hakee yhden viitteen avaimen perusteella,
         viitteen perusteella, molempien perusteella,
@@ -219,21 +222,6 @@ class DatabaseManager:
         rows = cursor.fetchall()
         connection.close()
         return rows
-
-
-    def get_inproceedings(self, key=None):
-        """Hakee inproceedingit get_referenceä käyttäen."""
-        return self.get_reference("inproceeding", key)
-
-
-    def get_articles(self, key=None):
-        """Hakee articlet get_referenceä käyttäen."""
-        return self.get_reference("article", key)
-
-
-    def get_books(self, key=None):
-        """Hakee bookit get_referenceä käyttäen."""
-        return self.get_reference("book", key)
 
 
     # muokkaus tietokannassa

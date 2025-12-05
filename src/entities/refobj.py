@@ -13,6 +13,6 @@ class Reference:
 
     def __str__(self):
         fields_str = "\n".join(
-            f"  {field}: {value}" for field, value in self.other_fields.items()
+            f"{field}: {value}" for field, value in self.other_fields.items()
         )
         return f"Type: {self.ref_type}\nKey: {self.key}\n{fields_str}"

@@ -1,6 +1,7 @@
 """Viitteiden hallinta ja käsittely."""
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
+import json
 from repositories.database_manager import DatabaseManager
 from entities.refobj import Reference
 
@@ -8,39 +9,28 @@ class ReferenceManager:
     """Vastaa viitteiden käsittelystä tietokannassa."""
     def __init__(self, db_name="references.db"):
         self.db_manager = DatabaseManager(db_name)
+    
+    def _row_to_reference(self, row):
+        """
+        Palauttaa tuplen, jossa id ja 
+        tietokannasta haettu refi oliona
+        """
+        ref_id, ref_type, key, other_fields_json = row
+        other_fields = json.loads(other_fields_json) if other_fields_json else {}
+        return (ref_id, Reference(ref_type, key, other_fields))
 
     def listaa(self):
         """Palauttaa listauksen kaikista viitteistä tietokannassa."""
-        inproceedings = self.db_manager.get_inproceedings()
-        articles = self.db_manager.get_articles()
-        books = self.db_manager.get_books()
+        rows = self.db_manager.get_reference()
+        return [self._row_to_reference(r) for r in rows]
 
-        listing = "Inproceedings:\n"
-        for row in inproceedings:
-            listing += str(row) + "\n"
-            listing += (
-                "tagit: " 
-                + ", ".join(self.get_reference_tags(row[0]))
-                + "\n\n"
-            )
-
-        listing += "\nArticles:\n"
-        for row in articles:
-            listing += str(row) + "\n"
-            listing += (
-                "tagit: " 
-                + ", ".join(self.get_reference_tags(row[0]))
-                + "\n\n"
-            )
-
-
-        listing += "\nBooks:\n"
-        for row in books:
-            listing += str(row) + "\n"
-            listing += "tagit: " + ", ".join(self.get_reference_tags(row[0])) + "\n\n"
-
-        return listing
-
+    def entry_info(self, target_key=None):
+        """Hakee tietyn viitteen tiedot tietokannasta."""
+        row = self.db_manager.get_reference(target_key)
+        if not row:
+            return None
+        return self._row_to_reference(row)
+    
     def get_reference_tags(self, reference_id):
         """Hakee viitteen tagit tietokannasta."""
         return self.db_manager.get_tags_for_ref(reference_id)
@@ -63,25 +53,6 @@ class ReferenceManager:
         print(result)
         return(str(self.db_manager.filter_references_db(choices)))
 
-    def entry_info(self, entry_type, target_key):
-        """Hakee tietyn viitteen tiedot tietokannasta."""
-        fetch_map = {
-            "inproceeding": (self.db_manager.get_inproceedings, Reference),
-            "article": (self.db_manager.get_articles, Reference),
-            "book": (self.db_manager.get_books, Reference),
-        }
-
-        if entry_type not in fetch_map:
-            return None
-
-        fetcher, constructor = fetch_map[entry_type]
-        rows = fetcher(target_key)
-
-        if not rows:
-            return None
-
-        return constructor(*rows[0][1:])
-
     def edit_entry(self, entry_type, target_key, **kwargs):
         """Muokkaa tietyn viitteen tietoja tietokannassa."""
         self.db_manager.edit_entry(entry_type, target_key, **kwargs)
@@ -90,32 +61,10 @@ class ReferenceManager:
         """Poistaa tietyn viitteen tietokannassa."""
         self.db_manager.delete_entry(entry_type, target_key)
 
-    def add_book(self, key, author, title, year, publisher, tags=None):
-        """lisää kirjan tietokantaan"""
-        if tags is None:
-            tags = []
-        self.db_manager.insert_reference(Reference(
-            "book", key, {"author": author, "title": title, "year": year, "publisher": publisher}),
-            tags)
-
-    def add_article(self, key, author, title, journal, year, volume, pages, tags=None):
-        """lisää artikkelin tietokantaan"""
-        if tags is None:
-            tags = []
-        self.db_manager.insert_reference(
-            Reference(
-                "article", key, {"author": author, "title": title, "journal": journal, "year": year,
-                                 "volume": volume, "pages": pages}),
-            tags
-        )
-
-    def add_inproceeding(self, key, author, title, year, booktitle, tags=None):
-        """lisää inproceedingin tietokantaan"""
-        if tags is None:
-            tags = []
-        self.db_manager.insert_reference(Reference(
-            "inproceeding", key, {"author": author, "title": title, "year": year,
-                                  "booktitle": booktitle}), tags)
+    def add_entry(self, entry_type, key, other_elements = {}, tags=[]):
+        """Lisää uuden viitteen tietokantaan."""
+        entry = Reference(entry_type, key, other_elements)
+        return self.db_manager.insert_reference(entry, tags)
 
     def export_bibtex(self, filename): # pylint: disable=too-many-locals #TODO too many?
         """Vie kaikki viitteet BibTeX-tiedostoon."""
