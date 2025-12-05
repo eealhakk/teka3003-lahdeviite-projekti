@@ -3,35 +3,36 @@
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 import sqlite3
 import json
-from entities.refobj import Article, Inproceeding, Book
+from entities.refobj import Reference
 
-VPL11 = Inproceeding(
+VPL11 = Reference(
+    ref_type="inproceeding",
     key="VPL11",
-    author="Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
-    title="Extreme Apprenticeship Method in Teaching Programming for Beginners.",
-    year=2011,
-    booktitle=(
-        "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on "
-        "Computer science education"
-    )
+    other_fields={"author": "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
+                   "title": "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
+                   "year": 2011,
+                   "booktitle": ("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on "
+                                 "Computer science education")}
 )
 
-CBH91 = Article(
+CBH91 = Reference(
+    ref_type="article",
     key="CBH91",
-    author="Allan Collins and John Seely Brown and Ann Holum",
-    title="Cognitive apprenticeship: making thinking visible",
-    journal="American Educator",
-    year=1991,
-    volume=6,
-    pages="38--46"
+    other_fields={"author": "Allan Collins and John Seely Brown and Ann Holum",
+                  "title": "Cognitive apprenticeship: making thinking visible",
+                  "journal": "American Educator",
+                  "year": 1991,
+                  "volume": 6,
+                  "pages": "38--46"}
 )
 
-MARTIN09 = Book(
+MARTIN09 = Reference(
+    ref_type="book",
     key="Martin09",
-    author="Martin, Robert",
-    title="Clean Code: A Handbook of Agile Software Craftsmanship",
-    year=2008,
-    publisher="Prentice Hall"
+    other_fields={"author": "Martin, Robert", 
+                  "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+                  "year": 2008,
+                  "publisher": "Prentice Hall"}
 )
 
 entries = [VPL11, CBH91, MARTIN09]
@@ -137,6 +138,7 @@ class DatabaseManager:
         return tags
 
     def get_references_by_tag(self, tag_name):
+        """Hakee viitteet tagin perusteella tietokannasta"""
         tag_id = self.get_tag_id(tag_name)
         if not tag_id:
             return []
@@ -198,20 +200,40 @@ class DatabaseManager:
         return new_id
 
     # haut tietokannasta
-    def get_reference(self, key=None):
+    def get_reference(self, ref_type=None, key=None):
         """
         Hakee yhden viitteen avaimen perusteella,
+        viitteen perusteella, molempien perusteella,
         tai kaikki viitteet tietokannasta
         """
         connection = self.connect()
         cursor = connection.cursor()
+        if ref_type and key:
+            cursor.execute("SELECT * FROM reference WHERE type = ? AND key = ?;", (ref_type, key))
+        if ref_type:
+            cursor.execute("SELECT * FROM reference WHERE type = ?;", (ref_type))
         if key:
-            cursor.execute("SELECT * FROM reference WHERE key = ?;", (key,))
+            cursor.execute("SELECT * FROM reference WHERE key = ?;", (key))
         else:
             cursor.execute("SELECT * FROM reference;")
         rows = cursor.fetchall()
         connection.close()
         return rows
+
+
+    def get_inproceedings(self):
+        """Hakee inproceedingit get_referenceä käyttäen."""
+        return self.get_reference("inproceeding")
+
+
+    def get_articles(self):
+        """Hakee articlet get_referenceä käyttäen."""
+        return self.get_reference("article")
+
+
+    def get_books(self):
+        """Hakee bookit get_referenceä käyttäen."""
+        return self.get_reference("book")
 
 
     # muokkaus tietokannassa
@@ -296,9 +318,9 @@ class DatabaseManager:
             selected_attributes = []  # tyhjä lista = kaikki attribuutit tulostetaan
 
         fetch_map = {
-            "inproceeding": (self.get_inproceedings, Inproceeding),
-            "article": (self.get_articles, Article),
-            "book": (self.get_books, Book),
+            "inproceeding": (self.get_inproceedings, Reference),
+            "article": (self.get_articles, Reference),
+            "book": (self.get_books, Reference),
         }
 
         output_lines = []

@@ -2,7 +2,7 @@
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 from repositories.database_manager import DatabaseManager
-from entities.refobj import Article, Inproceeding, Book
+from entities.refobj import Reference
 
 class ReferenceManager:
     """Vastaa viitteiden käsittelystä tietokannassa."""
