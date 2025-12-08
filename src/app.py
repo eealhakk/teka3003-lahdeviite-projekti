@@ -82,30 +82,26 @@ class App:
 
     def edit_reference(self):
         """Metodi lähteen muokkaamiseen"""
-        ref_type = self.ask_type()
-        if not ref_type:
-            return
-
+        ref_type = input("Anna muokattavan viitteen tyyppi: ").strip()
         key_editing = input("Anna muokattavan viitteen BibTeX-avain: ").strip()
-        ref_editing = self.reference_manager.entry_info(ref_type, str(key_editing))
 
-        if not ref_editing:
+        ref_obj = self.reference_manager.entry_info(ref_type, key_editing)
+
+        if not ref_obj:
             print("Viitettä ei löydy.")
             return
-        print("\n"+str(ref_editing)+"\n")
+        
+        print("\n"+str(ref_obj)+"\n")
 
         fields = input("Anna kentät, joita haluat muokata erotettuna pilkulla: ").strip()
-        allowed_fields = vars(ref_editing).keys()
+        allowed_fields = ref_obj.other_fields.keys()
 
+        new_values = {}
         for field in fields.split(","):
             field = field.strip()
             if field not in allowed_fields:
                 print(f"'{field}' ei ole sallittu.")
                 return
-
-        new_values = {}
-        for field in fields.split(","):
-            field = field.strip()
             new_value = input(f"Anna uusi arvo kentälle '{field}': ").strip()
             new_values[field] = new_value
 

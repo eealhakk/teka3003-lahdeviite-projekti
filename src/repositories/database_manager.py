@@ -225,13 +225,13 @@ class DatabaseManager:
 
 
     # muokkaus tietokannassa
-    def edit_entry(self, target_key, **kwargs):
+    def edit_entry(self, entry_type, target_key, **kwargs):
         """Muokkaa tietokannan merkintää."""
         conn = self.connect()
         cur = conn.cursor()
 
         # Haetaan nykyiset other_fields
-        cur.execute('SELECT other_fields FROM reference WHERE "key" = ?;', (target_key,))
+        cur.execute('SELECT other_fields FROM reference WHERE "key" = ? AND type = ?;', (target_key, entry_type))
         row = cur.fetchone()
         if not row:
             conn.close()
