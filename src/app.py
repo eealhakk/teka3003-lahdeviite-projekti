@@ -61,12 +61,10 @@ class App:
     def delete_reference(self):
         """Metodi lähteen poistamiseen"""
 
-        ref_type = self.ask_type()
-        if not ref_type:
-            return
+        ref_type = input("Anna poistettavan viitteen tyyppi: ").strip()
 
         key_editing = input("Anna poistettavan viitteen BibTeX-avain: ").strip()
-        poistettava = self.reference_manager.entry_info(ref_type, str(key_editing))
+        poistettava = self.reference_manager.entry_info(str(ref_type), str(key_editing))
 
         if not poistettava:
             print("Viitettä ei löydy.")
