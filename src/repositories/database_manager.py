@@ -45,10 +45,10 @@ class DatabaseManager:
         self.create_database()
 
         #testidata
-        if len(self.get_reference()) == 0:
-            self.insert_reference(VPL11)
-            self.insert_reference(CBH91)
-            self.insert_reference(MARTIN09)
+        #if len(self.get_reference()) == 0:
+        #    self.insert_reference(VPL11)
+        #    self.insert_reference(CBH91)
+        #    self.insert_reference(MARTIN09)
 
     def connect(self):
         """Yhdistää tietokantaan."""
