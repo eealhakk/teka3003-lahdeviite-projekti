@@ -29,7 +29,8 @@ class TestReferenceManager(unittest.TestCase):
             other_elements={"author": "Martin, Robert",
                     "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
                     "year": 2008,
-                    "publisher": "Prentice Hall"}
+                    "publisher": "Prentice Hall"},
+            tags=["Agile", "Development"]
         )
 
         # Lisättävä artikkeli
@@ -52,11 +53,28 @@ class TestReferenceManager(unittest.TestCase):
 
     def test_add_entries(self):
         """Tarkistetaan että setUpissa luodut lisättävät päätyivät tietokantaan"""
-        refs = self.ref.listaa()
-        self.assertEqual(len(refs), 2)
-        #Pistin tarkistamaan vaan avaimet, kun tuntui turhalta kirjoittaa kaikki tiedot
-        keys = [r[1].key for r in refs]
-        self.assertEqual(keys, ["Martin09", "CBH91"])
+        testipaluuarvo = ''
+        for reference in self.ref.listaa():
+            reference_tags = self.ref.get_reference_tags(reference[0])
+            testipaluuarvo += (f"---\n\n{reference[1]}\ntags: {reference_tags}")
+        self.assertEqual(testipaluuarvo,
+                         "---\n\n" +
+                         "Type: book\n" +
+                        "Key: Martin09\n" +
+                        "author: Martin, Robert\n" +
+                        "title: Clean Code: A Handbook of Agile Software Craftsmanship\n" +
+                        "year: 2008\n" +
+                        "publisher: Prentice Hall\n" +
+                        "tags: ['Agile', 'Development']---\n\n" +
+                        "Type: article\n" +
+                        "Key: CBH91\n" +
+                        "author: Allan Collins and John Seely Brown and Ann Holum\n" +
+                        "title: Cognitive apprenticeship: making thinking visible\n" +
+                        "journal: American Educator\n" +
+                        "year: 1991\n" +
+                        "volume: 6\n" +
+                        "pages: 38--46\n" +
+                        "tags: []")
 
 
     def test_add_entries_with_and_without_tags(self):
@@ -86,14 +104,45 @@ class TestReferenceManager(unittest.TestCase):
             tags=["Vesamainen", "Eeppinen", "klassikko"]
         )
 
-        refs = self.ref.listaa()
-        self.assertEqual(len(refs), 4)
-
-        # Tarkistetaan että uudet keyt löytyvät
-        keys = [ref[1].key for ref in refs]
-        # Laitoin nämä nyt tarkistamaan pelkät avaimet
-        self.assertIn("Lappalainen2022", keys)
-        self.assertIn("VPL11", keys)
+        testipaluuarvo = ''
+        for reference in self.ref.listaa():
+            reference_tags = self.ref.get_reference_tags(reference[0])
+            testipaluuarvo += (f"---\n\n{reference[1]}\ntags: {reference_tags}")
+        self.assertEqual(testipaluuarvo,
+                         "---\n\n" +
+                         "Type: book\n" +
+                        "Key: Martin09\n" +
+                        "author: Martin, Robert\n" +
+                        "title: Clean Code: A Handbook of Agile Software Craftsmanship\n" +
+                        "year: 2008\n" +
+                        "publisher: Prentice Hall\n" +
+                        "tags: ['Agile', 'Development']---\n\n" +
+                        "Type: article\n" +
+                        "Key: CBH91\n" +
+                        "author: Allan Collins and John Seely Brown and Ann Holum\n" +
+                        "title: Cognitive apprenticeship: making thinking visible\n" +
+                        "journal: American Educator\n" +
+                        "year: 1991\n" +
+                        "volume: 6\n" +
+                        "pages: 38--46\n" +
+                        "tags: []---\n\n" +
+                        "Type: lecturenote\n" +
+                        "Key: Lappalainen2022\n" +
+                        "author: Lappalainen, Vesa\n" +
+                        "title: Ohjelmointi 2 -kurssin luentomuistiinpanot\n" +
+                        "year: 2022\n" +
+                        "publisher: Jyväskylän yliopistopaino\n" +
+                        "course: Ohjelmointi 2\n" +
+                        "tags: []---\n\n" +
+                        "Type: inproceeding\n" +
+                        "Key: VPL11\n" +
+                        "author: Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti\n" +
+                        "title: Extreme Apprenticeship Method in " +
+                        "Teaching Programming for Beginners.\n" +
+                        "year: 2011\n" +
+                        "booktitle: SIGCSE '11: Proceedings of the 42nd SIGCSE technical " +
+                        "symposium on Computer science education\n" +
+                        "tags: ['Vesamainen', 'Eeppinen', 'klassikko']")
 
 
     def test_export_bibtex(self):
@@ -119,71 +168,108 @@ class TestReferenceManager(unittest.TestCase):
 
     def test_delete_entry_finds_thing(self):
         """Testataan viite_repositoryn delete_entry-metodia niin että poistettava löytyy."""
-        self.ref.delete_entry("book", "TEST1")
-        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n" +
-        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
-        "tagit: \n\n\n" +
-        "Articles:\n" +
-        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n" +
-        "tagit: mahtava\n\n\n"
-        "Books:\n")
+        self.ref.delete_entry("book", "Martin09")
+        testipaluuarvo = ''
+        for reference in self.ref.listaa():
+            reference_tags = self.ref.get_reference_tags(reference[0])
+            testipaluuarvo += (f"---\n\n{reference[1]}\ntags: {reference_tags}")
+        self.assertEqual(testipaluuarvo,
+                         "---\n\n" +
+                        "Type: article\n" +
+                        "Key: CBH91\n" +
+                        "author: Allan Collins and John Seely Brown and Ann Holum\n" +
+                        "title: Cognitive apprenticeship: making thinking visible\n" +
+                        "journal: American Educator\n" +
+                        "year: 1991\n" +
+                        "volume: 6\n" +
+                        "pages: 38--46\n" +
+                        "tags: []")
 
 
     def test_delete_entry_doesnt_find(self):
         """Testataan viite_repositoryn delete_entry-metodia että poistettava ei löydy."""
-        self.ref.delete_entry("book", "TEST2")
-        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n" +
-        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
-        "tagit: \n\n\n" +
-        "Articles:\n" +
-        "(1, 'TEST2', 'Test author2', 'Test title2', 'Test journal2', 2022, 2, '2')\n" +
-        "tagit: mahtava\n\n\n"
-        "Books:\n" +
-        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n" +
-        "tagit: hieno, mahtava\n\n")
+        self.ref.delete_entry("book", "OhjTest")
+        testipaluuarvo = ''
+        for reference in self.ref.listaa():
+            reference_tags = self.ref.get_reference_tags(reference[0])
+            testipaluuarvo += (f"---\n\n{reference[1]}\ntags: {reference_tags}")
+        self.assertEqual(testipaluuarvo,
+                         "---\n\n" +
+                         "Type: book\n" +
+                        "Key: Martin09\n" +
+                        "author: Martin, Robert\n" +
+                        "title: Clean Code: A Handbook of Agile Software Craftsmanship\n" +
+                        "year: 2008\n" +
+                        "publisher: Prentice Hall\n" +
+                        "tags: ['Agile', 'Development']---\n\n" +
+                        "Type: article\n" +
+                        "Key: CBH91\n" +
+                        "author: Allan Collins and John Seely Brown and Ann Holum\n" +
+                        "title: Cognitive apprenticeship: making thinking visible\n" +
+                        "journal: American Educator\n" +
+                        "year: 1991\n" +
+                        "volume: 6\n" +
+                        "pages: 38--46\n" +
+                        "tags: []")
 
 
     def test_edit_entry(self):
         """Testataan viite_repositoryn edit_entry-metodia, että osaa muokata."""
-        self.ref.edit_entry("article", "TEST2", author="Pyyttoni", year=1899)
-        self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n" +
-        "(1, 'TEST3', 'Test author3', 'Test title3', 2023, 'Test booktitle3')\n" +
-        "tagit: \n\n\n" +
-        "Articles:\n" +
-        "(1, 'TEST2', 'Pyyttoni', 'Test title2', 'Test journal2', 1899, 2, '2')\n" +
-        "tagit: mahtava\n\n\n"
-        "Books:\n" +
-        "(1, 'TEST1', 'Test author1', 'Test title1', 2021, 'Test publisher1')\n" +
-        "tagit: hieno, mahtava\n\n")
+        self.ref.edit_entry("article", "CBH91", author="Seely, Brown; Holum, Ann", year=2019)
+        testipaluuarvo = ''
+        for reference in self.ref.listaa():
+            reference_tags = self.ref.get_reference_tags(reference[0])
+            testipaluuarvo += (f"---\n\n{reference[1]}\ntags: {reference_tags}")
+        self.assertEqual(testipaluuarvo,
+                         "---\n\n" +
+                         "Type: book\n" +
+                        "Key: Martin09\n" +
+                        "author: Martin, Robert\n" +
+                        "title: Clean Code: A Handbook of Agile Software Craftsmanship\n" +
+                        "year: 2008\n" +
+                        "publisher: Prentice Hall\n" +
+                        "tags: ['Agile', 'Development']---\n\n" +
+                        "Type: article\n" +
+                        "Key: CBH91\n" +
+                        "author: Seely, Brown; Holum, Ann\n" +
+                        "title: Cognitive apprenticeship: making thinking visible\n" +
+                        "journal: American Educator\n" +
+                        "year: 2019\n" +
+                        "volume: 6\n" +
+                        "pages: 38--46\n" +
+                        "tags: []")
+
 
 
     def test_entry_info_finds(self):
         """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia"""
-        self.assertEqual(str(self.ref.entry_info("inproceeding", "TEST3")), "key=TEST3\n" +
-                         "author=Test author3\n" +
-                         "title=Test title3\n" +
-                         "year=2023\n" +
-                         "booktitle=Test booktitle3")
+        self.assertEqual(str(self.ref.entry_info("book", "Martin09")),
+                         "Type: book\n" +
+                        "Key: Martin09\n" +
+                        "author: Martin, Robert\n" +
+                        "title: Clean Code: A Handbook of Agile Software Craftsmanship\n" +
+                        "year: 2008\n" +
+                        "publisher: Prentice Hall")
 
 
     def test_entry_info_doesnt_find_entry_type(self):
         """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia
         niin, ettei löydy haluttua kohdetta."""
-        self.assertEqual(str(self.ref.entry_info("inproceedingdong", "TEST3")), "None")
+        self.assertEqual(str(self.ref.entry_info("inproceeding", "Martin09")), "None")
 
 
     def test_entry_info_doesnt_find_key(self):
         """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia
         niin, ettei löydy haluttua kohdetta."""
-        self.assertEqual(str(self.ref.entry_info("inproceeding", "TEST2")), "None")
+        self.assertEqual(str(self.ref.entry_info("book", "CBH91")), "None")
 
 
     def test_get_references_by_tag(self):
         """Testataan kaikki halutun tagin omaavien viitteiden hakeminen"""
-        self.assertEqual(str(self.ref.get_references_by_tag("mahtava")),
-                         "[('article', (1, 'TEST2', 'Test author2', 'Test title2', " +
-                         "'Test journal2', 2022, 2, '2')), ('book', (1, 'TEST1', " +
-                         "'Test author1', 'Test title1', 2021, 'Test publisher1'))]")
+        self.assertEqual(str(self.ref.get_references_by_tag("Agile")),
+                         "[(1, 'book', 'Martin09', '{\"author\": \"Martin, Robert\", \"title\": " +
+                         "\"Clean Code: A Handbook of Agile Software Craftsmanship\", \"year\": " +
+                         "2008, \"publisher\": \"Prentice Hall\"}')]")
 
 
     def test_filter_references(self):

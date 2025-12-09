@@ -9,7 +9,7 @@ class ReferenceManager:
     """Vastaa viitteiden käsittelystä tietokannassa."""
     def __init__(self, db_name="references.db"):
         self.db_manager = DatabaseManager(db_name)
-    
+
     def _row_to_reference(self, row):
         """
         Palauttaa tuplen, jossa id ja 
@@ -31,7 +31,7 @@ class ReferenceManager:
             return None
         _, ref_obj = self._row_to_reference(row[0])
         return ref_obj
-    
+
     def get_reference_tags(self, reference_id):
         """Hakee viitteen tagit tietokannasta."""
         return self.db_manager.get_tags_for_ref(reference_id)
