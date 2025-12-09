@@ -23,34 +23,25 @@ class TestReferenceManager(unittest.TestCase):
 
 
         # Lisättävä kirja
-        self.ref.add_book(
-            key="TEST1",
-            author="Test author1",
-            title="Test title1",
-            year=2021,
-            publisher="Test publisher1",
-            tags=["hieno", "mahtava"]
+        self.ref.add_entry(
+            entry_type="book",
+            key="Martin09",
+            other_elements={"author": "Martin, Robert",
+                    "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+                    "year": 2008,
+                    "publisher": "Prentice Hall"}
         )
 
         # Lisättävä artikkeli
-        self.ref.add_article(
-            key="TEST2",
-            author="Test author2",
-            title="Test title2",
-            journal="Test journal2",
-            year=2022,
-            volume="2",
-            pages="2",
-            tags=["mahtava"]
-        )
-
-        # Lisättävä konferenssijulkaisu
-        self.ref.add_inproceeding(
-            key="TEST3",
-            author="Test author3",
-            title="Test title3",
-            year=2023,
-            booktitle="Test booktitle3",
+        self.ref.add_entry(
+            entry_type="article",
+            key="CBH91",
+            other_elements={"author": "Allan Collins and John Seely Brown and Ann Holum",
+                    "title": "Cognitive apprenticeship: making thinking visible",
+                    "journal": "American Educator",
+                    "year": 1991,
+                    "volume": 6,
+                    "pages": "38--46"}
         )
 
 
@@ -76,34 +67,27 @@ class TestReferenceManager(unittest.TestCase):
         """Luodaan tageilla ja tageitta olevia entryjä, että tulee testattua
         koodin 'if tags is None' -rivien haarautumiset."""
 
-        # Lisättävä kirja
-        self.ref.add_book(
-            key="TEST4",
-            author="Test author4",
-            title="Test title4",
-            year=2024,
-            publisher="Test publisher4"
-        )
-
-        # Lisättävä artikkeli
-        self.ref.add_article(
-            key="TEST5",
-            author="Test author5",
-            title="Test title5",
-            journal="Test journal5",
-            year=2025,
-            volume="5",
-            pages="5"
+        # Lisättävä luentomuistiinpano
+        self.ref.add_entry(
+            entry_type="lecturenote",
+            key="Lappalainen2022",
+            other_elements={"author": "Lappalainen, Vesa",
+                    "title": "Ohjelmointi 2 -kurssin luentomuistiinpanot",
+                    "year": 2022,
+                    "publisher": "Jyväskylän yliopistopaino",
+                    "course": "Ohjelmointi 2"}
         )
 
         # Lisättävä konferenssijulkaisu
-        self.ref.add_inproceeding(
-            key="TEST6",
-            author="Test author6",
-            title="Test title6",
-            year=2026,
-            booktitle="Test booktitle6",
-            tags=["Mahtava", "HIENO", "Huikea"]
+        self.ref.add_entry(
+            entry_type="inproceeding",
+            key="VPL11",
+            other_elements={"author": "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
+                    "title": "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
+                    "year": 2011,
+                    "booktitle": ("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium "
+                                 "on Computer science education")},
+            tags=["Vesamainen", "Eeppinen", "klassikko"]
         )
 
         self.assertEqual(str(self.ref.listaa()), "Inproceedings:\n"+

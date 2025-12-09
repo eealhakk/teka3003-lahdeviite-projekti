@@ -29,7 +29,7 @@ CBH91 = Reference(
 MARTIN09 = Reference(
     ref_type="book",
     key="Martin09",
-    other_fields={"author": "Martin, Robert", 
+    other_fields={"author": "Martin, Robert",
                   "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
                   "year": 2008,
                   "publisher": "Prentice Hall"}
@@ -231,7 +231,8 @@ class DatabaseManager:
         cur = conn.cursor()
 
         # Haetaan nykyiset other_fields
-        cur.execute('SELECT other_fields FROM reference WHERE "key" = ? AND type = ?;', (target_key, entry_type))
+        cur.execute('SELECT other_fields FROM reference WHERE "key" = ? AND type = ?;',
+                    (target_key, entry_type))
         row = cur.fetchone()
         if not row:
             conn.close()
