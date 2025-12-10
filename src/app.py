@@ -44,7 +44,8 @@ class App:
         value = input("Valinta: ").strip()
 
         if value == "1":
-            print("Keskeneräinen ominaisuus")
+            print(self.reference_manager.get_references_by_tag(
+                input("Anna tagi: ").strip()))
         elif value == "2":
             for reference in self.reference_manager.listaa():
                 reference_tags = self.reference_manager.get_reference_tags(reference[0])
