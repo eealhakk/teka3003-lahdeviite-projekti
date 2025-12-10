@@ -272,6 +272,30 @@ class TestReferenceManager(unittest.TestCase):
                          "2008, \"publisher\": \"Prentice Hall\"}')]")
 
 
+    def test_get_references_by_tag_multiple(self):
+        """Testataan kaikki halutun tagin omaavien viitteiden hakeminen (useampi tulos)"""
+        self.ref.add_entry(
+            entry_type="inproceeding",
+            key="VPL11",
+            other_elements={"author": "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
+                    "title": "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
+                    "year": 2011,
+                    "booktitle": ("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium "
+                                 "on Computer science education")},
+            tags=["Vesamainen", "Eeppinen", "klassikko", "Development"]
+        )
+
+        self.assertEqual(str(self.ref.get_references_by_tag("Development")),
+                         "[(1, 'book', 'Martin09', '{\"author\": \"Martin, Robert\", \"title\": " +
+                         "\"Clean Code: A Handbook of Agile Software Craftsmanship\", \"year\": " +
+                         "2008, \"publisher\": \"Prentice Hall\"}'), " +
+                         "(3, 'inproceeding', 'VPL11', '{\"author\": \"Vihavainen, Arto and " +
+                         "Paksula, Matti and Luukkainen, Matti\", \"title\": \"Extreme " +
+                         "Apprenticeship Method in Teaching Programming for Beginners.\", \"" +
+                         "year\": 2011, \"booktitle\": \"SIGCSE \\'11: Proceedings of the 42nd " +
+                         "SIGCSE technical symposium on Computer science education\"}')]")
+
+
     def test_filter_references(self):
         """Testaa että filter_references_db palauttaa oikean stringin (Book + key + author)."""
 
