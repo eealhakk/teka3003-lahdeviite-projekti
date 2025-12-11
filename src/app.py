@@ -11,26 +11,29 @@ class App:
         while True:
             print("\n=== Valitse toiminto ===")
             print("1) Lisää uusi viite")
-            print("2) Listaa viitteet")
-            print("3) Vie BibTeX-tiedosto")
-            print("4) Muokkaa viitettä")
-            print("5) Poista viite")
-            print("6) Lopeta\n")
+            print("2) Lisää uusi viite DOI")
+            print("3) Listaa viitteet")
+            print("4) Vie BibTeX-tiedosto")
+            print("5) Muokkaa viitettä")
+            print("6) Poista viite")
+            print("7) Lopeta\n")
 
             choice = input("Valinta: ").strip()
 
             if choice == "1":
                 self.add_reference()
             elif choice == "2":
-                self.list_references()
+                self.add_reference_by_doi()
             elif choice == "3":
+                self.list_references()
+            elif choice == "4":
                 self.reference_manager.export_bibtex("references.bib")
                 print("BibTeX-tiedosto references.bib luotu")
-            elif choice == "4":
-                self.edit_reference()
             elif choice == "5":
-                self.delete_reference()
+                self.edit_reference()
             elif choice == "6":
+                self.delete_reference()
+            elif choice == "7":
                 break
             else:
                 print("Virheellinen valinta")
@@ -151,3 +154,41 @@ class App:
             return "book"
         print("Virheellinen valinta")
         return None
+    
+    def add_reference_by_doi(self):
+        """Lisää viite DOI-tunnisteen avulla artikkeliksi"""
+        doi = input("Anna DOI(esimerkiksi: doi.org/10.1080/10509585.2015.1092083): ").strip()
+
+        if not doi:
+            return
+
+        key = input("BibTeX-avain: ").strip()
+        tags = input("Tagit (valinnainen, erottele pilkulla): ").strip().split(",")
+        if not key:
+            print("Virheellinen BibTex avain")
+            return
+        article = self.reference_manager.fetch_reference_by_doi(doi)
+
+        if not article:
+            print("DOI-haku epäonnistui tai viite puutteellinen.")
+            return
+
+
+        # Viitteen lisäys tietokantaan
+        #print("DEBUG Article:", vars(article))
+        if self.reference_manager.add_entry(
+            "article",  # entry_type
+            key,        # key
+            {
+                "author": article.other_fields.get("author", "-"),
+                "title": article.other_fields.get("title", "-"),
+                "journal": article.other_fields.get("journal", "-"),
+                "year": article.other_fields.get("year", 0),
+                "volume": article.other_fields.get("volume", "-"),
+                "pages": article.other_fields.get("pages", "-"),
+            },
+            tags
+        ):
+            print(f"Viite DOI:sta {doi} lisätty tietokantaan.")
+        else:
+            print("Virhe lisättäessä, varmista että BibTeX-avain on uniikki.")

@@ -5,6 +5,8 @@ import json
 from repositories.database_manager import DatabaseManager
 from entities.refobj import Reference
 
+import requests
+
 class ReferenceManager:
     """Vastaa viitteiden käsittelystä tietokannassa."""
     def __init__(self, db_name="references.db"):
@@ -83,3 +85,46 @@ class ReferenceManager:
                     f.write(f"  {name} = {{{value}}},\n")
 
                 f.write("}\n\n")
+
+    def fetch_reference_by_doi(self, doi):
+        """Hakee viitteen Crossrefistä ja palauttaa Reference-oliona."""
+        url = f"https://api.crossref.org/works/{doi}"
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+        except requests.RequestException as e:
+            print(f"DOI-haku epäonnistui: {e}")
+            return None
+
+        data = response.json().get("message", {})
+
+        # Authors
+        author_list = data.get("author", [])
+        if author_list:
+            authors = " and ".join(
+                f"{a.get('family','')}, {a.get('given','')}"
+                for a in author_list
+            )
+        else:
+            authors = "-"  # oletusarvo
+        title = data.get("title", ["-"])[0]
+        year = data.get("issued", {}).get("date-parts", [[0]])[0][0]
+        journal = data.get("container-title", ["-"])[0]
+        volume = data.get("volume", "-")
+        pages = data.get("page", "-")
+
+        # Rakennetaan other_fields-dict
+        other_fields = {
+            "author": authors,
+            "title": title,
+            "journal": journal,
+            "year": year,
+            "volume": volume,
+            "pages": pages
+        }
+
+        return Reference(
+            ref_type="article",
+            key=doi,
+            other_fields=other_fields
+        )
