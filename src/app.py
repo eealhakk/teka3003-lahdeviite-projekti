@@ -53,9 +53,11 @@ class App:
         elif value == "3":
             print("Anna kenttä ja arvo jonka mukaan filtteröidä esim. year,2008 tai type,book")
             givenvalue = input("Syötä kenttä ja arvo erotettuna pilkulla: ").strip()
-            tulokset = self.reference_manager.filter_references(givenvalue)
-            for ref in tulokset:
-                print(str(ref)+"\n=====================================")
+
+            print("===Tulokset:===")
+            for reference in self.reference_manager.filter_references(givenvalue):
+                reference_tags = self.reference_manager.get_reference_tags(reference[0])
+                print(f"---\n\n{reference[1]}\ntags: {reference_tags}")
             # vanha toteutus v--
             # print("(0) Listaa kaikki    (3) Book         (6) Title       (9) Volume") # pylint: disable=line-too-long
             # print("(1) Inproceedings    (4) Key          (7) Year        (10) Pages") # pylint: disable=line-too-long

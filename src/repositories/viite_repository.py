@@ -45,11 +45,10 @@ class ReferenceManager:
 
         # Muutetaan syöte listaksi
         choices = [x.strip() for x in arvot.split(",")]
-        print("choices testi:", choices)
+        # print("choices testi:", choices)
 
-        print("===Tulokset:===")
         rows = self.db_manager.filter_references_db(choices)
-        return rows
+        return [self._row_to_reference(r) for r in rows]
 
     def edit_entry(self, entry_type, target_key, **kwargs):
         """Muokkaa tietyn viitteen tietoja tietokannassa."""
