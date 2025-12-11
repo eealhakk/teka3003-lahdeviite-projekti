@@ -44,17 +44,13 @@ class ReferenceManager:
 
     def filter_references(self, arvot):
         """Siistitään filter syötettä ja välitetään filtteröinti"""
-        try:
-            # Muutetaan syöte listaksi kokonaislukuja
-            choices = [int(x.strip()) for x in arvot.split(",")]
-        except ValueError:
-            print("Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.")
-            return "Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.\n"
-        print("=====================================")
-        #print (self.db_manager.filter_references_db(choices))
-        result = self.db_manager.filter_references_db(choices)
-        print(result)
-        return(str(self.db_manager.filter_references_db(choices)))
+
+        # Muutetaan syöte listaksi
+        choices = [x.strip() for x in arvot.split(",")]
+        # print("choices testi:", choices)
+
+        rows = self.db_manager.filter_references_db(choices)
+        return [self._row_to_reference(r) for r in rows]
 
     def edit_entry(self, entry_type, target_key, **kwargs):
         """Muokkaa tietyn viitteen tietoja tietokannassa."""
