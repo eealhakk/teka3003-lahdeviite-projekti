@@ -45,7 +45,6 @@ class ReferenceManager:
 
         # Muutetaan syöte listaksi
         choices = [x.strip() for x in arvot.split(",")]
-        # print("choices testi:", choices)
 
         rows = self.db_manager.filter_references_db(choices)
         return [self._row_to_reference(r) for r in rows]

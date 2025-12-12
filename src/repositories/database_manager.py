@@ -289,9 +289,9 @@ class DatabaseManager:
         """Hakee tietokannasta avaimilla oikeat tiedot"""
 
         field = conditions[0]
-        field_value = conditions[1]
-
-        #print("filterdbtesti:", field, field_value)
+        if len(conditions) >= 2:
+            field_value = conditions[1]
+        else: field_value = ''
 
         connection = self.connect()
         cursor = connection.cursor()
@@ -303,80 +303,15 @@ class DatabaseManager:
         elif field == "key":
             cursor.execute("SELECT * FROM reference WHERE key LIKE ?;",(field_value,))
         else:
-            cursor.execute("SELECT * FROM reference WHERE other_fields LIKE ?;",
-                           ('%'+field+'%'+field_value+'%',))
+            cursor.execute("""
+                           SELECT * FROM reference
+                           WHERE other_fields LIKE ?
+                           OR other_fields LIKE ?;
+                           """,
+                           (
+                               '%'+field+'____'+field_value+'%', # jos muodossa "year": "2008"
+                               '%'+field+'___'+field_value+'%' # jos muodossa "year": 2008
+                            ))
         rows = cursor.fetchall()
         connection.close()
         return rows
-
-        # # vanha toteutus v--
-        # # TODO: Tämän voi toteuttaa hakuna tietokannasta # pylint: disable=W0511
-        # # jos kantaan tulee uusia tauluja
-        # # Mapit pääluokille ja attribuuteille
-        # classes_map = {1: "inproceeding", 2: "article", 3: "book"}
-        # attributes_map = {
-        #     4: "key", 5: "author", 6: "title", 7: "year",
-        #     8: "publisher", 9: "volume", 10: "pages", 11: "booktitle"
-        # }
-
-        # # Tarkistetaan, löytyykö 0 listasta
-        # list_all = 0 in conditions
-
-        # # Valitut luokat ja attribuutit
-        # selected_classes = [classes_map[c] for c in conditions if c in classes_map]
-        # selected_attributes = [attributes_map[c] for c in conditions if c in attributes_map]
-
-        # # Jos listataan kaikki, valitaan kaikki luokat ja tyhjennetään
-        # # attribuutit (kaikki tulostetaan)
-        # if list_all:
-        #     selected_classes = ["inproceeding", "article", "book"]
-        #     selected_attributes = []  # tyhjä lista = kaikki attribuutit tulostetaan
-
-        # fetch_map = {
-        #     "inproceeding": (self.get_inproceedings, Reference),
-        #     "article": (self.get_articles, Reference),
-        #     "book": (self.get_books, Reference),
-        # }
-
-        # output_lines = []
-
-        # # Käydään valitut luokat läpi TODO Logiikka alla kesken
-        # # TODO Olisiko mahdollista saada tulostuksen sijasta
-        # # palautus stringinä? Helpompi testata. Muut luokat
-        # # muutettu palautettavan stringin logiikalle. -Joonatan
-        # for cls_name in selected_classes:
-
-        #     fetch_func, cls_type = fetch_map[cls_name]
-
-        #     # Haetaan kaikki tietueet tietokannasta
-        #     rows = fetch_func()
-
-        #     # Käydään tietueet läpi
-        #     for row in rows:
-        #         # Luodaan objekti rivin tiedoista
-        #         obj = cls_type(*row[1:])
-
-        #         # Jos listataan kaikki tai attribuuteja ei ole erikseen valittu,
-        #         # tulostetaan koko objekti
-        #         if list_all or not selected_attributes:
-        #             #print(obj.__class__.__name__)
-        #             output_lines.append(obj.__class__.__name__)
-        #             #print(obj)
-        #             for attr, value in obj.__dict__.items():
-        #                 if not attr.startswith("_"):
-        #                     #print(f"{attr}: {value}")
-        #                     output_lines.append(f"{attr}: {value}")
-        #         else:
-        #             # Tulostetaan vain valitut attribuutit
-        #             #print(obj.__class__.__name__)
-        #             output_lines.append(obj.__class__.__name__)
-        #             output = []
-        #             for attr in selected_attributes:
-        #                 if hasattr(obj, attr):
-        #                     output.append(f"{attr}: {getattr(obj, attr)}")
-        #             #print(",\n".join(output))
-        #             output_lines.append(",\n".join(output))
-        #             output_lines.append("=" * 40)
-
-        #         #print("-"*40)
-        # return "\n".join(output_lines)
