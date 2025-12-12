@@ -16,7 +16,10 @@ class App:
             print("4) Vie BibTeX-tiedosto")
             print("5) Muokkaa viitettä")
             print("6) Poista viite")
-            print("7) Lopeta\n")
+            print("7) Lisää uusi viite URL")            
+            print("8) Lopeta\n")
+
+
 
             choice = input("Valinta: ").strip()
 
@@ -33,8 +36,10 @@ class App:
                 self.edit_reference()
             elif choice == "6":
                 self.delete_reference()
-            elif choice == "7":
+            elif choice == "8":
                 break
+            elif choice == "7":
+                self.add_reference_by_url()
             else:
                 print("Virheellinen valinta")
 
@@ -195,5 +200,44 @@ class App:
             tags
         ):
             print(f"Viite DOI:sta {doi} lisätty tietokantaan.")
+        else:
+            print("Virhe lisättäessä, varmista että BibTeX-avain on uniikki.")
+
+    def add_reference_by_url(self):
+        """Lisää viite URL-osoitteen avulla"""
+
+        url = input("Anna URL: ").strip()
+        if not url:
+            return
+
+        key = input("BibTeX-avain: ").strip()
+        tags = input("Tagit (valinnainen, erottele pilkulla): ").strip().split(",")
+
+        if not key:
+            print("Virheellinen BibTeX avain")
+            return
+
+        article = self.reference_manager.fetch_reference_by_url(url)
+
+        if not article:
+            print("URL-haku epäonnistui tai DOI ei löytynyt sivulta.")
+            return
+
+        ok = self.reference_manager.add_entry(
+            "article",
+            key,
+            {
+                "author": article.other_fields.get("author", "-"),
+                "title": article.other_fields.get("title", "-"),
+                "journal": article.other_fields.get("journal", "-"),
+                "year": article.other_fields.get("year", 0),
+                "volume": article.other_fields.get("volume", "-"),
+                "pages": article.other_fields.get("pages", "-"),
+            },
+            tags
+        )
+
+        if ok:
+            print("Viite lisätty URL:n kautta.")
         else:
             print("Virhe lisättäessä, varmista että BibTeX-avain on uniikki.")

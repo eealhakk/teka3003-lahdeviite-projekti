@@ -6,6 +6,8 @@ from repositories.database_manager import DatabaseManager
 from entities.refobj import Reference
 
 import requests
+import re
+
 
 class ReferenceManager:
     """Vastaa viitteiden käsittelystä tietokannassa."""
@@ -123,3 +125,39 @@ class ReferenceManager:
             key=doi,
             other_fields=other_fields
         )
+    
+    def fetch_reference_by_url(self, url):
+        """Hakee URL:n ja yrittää löytää DOI:n sivulta."""
+
+        try:
+            response = requests.get(
+                url,
+                timeout=10,
+                headers={"User-Agent": "Mozilla/5.0"}
+            )
+            response.raise_for_status()
+        except requests.RequestException:
+            return None
+
+        html = response.text
+
+        # 1) Etsi doi.org linkki sivulta
+        match = re.search(
+            r"doi\.org/(10\.\d{4,9}/[^\s\"\'<>]+)",
+            html,
+            re.IGNORECASE
+        )
+        if match:
+            doi = match.group(1).rstrip(").,;")
+            return self.fetch_reference_by_doi(doi)
+
+        # 2) Fallback: etsitään DOI tekstinä
+        match = re.search(
+            r"\b(10\.\d{4,9}/[^\s\"\'<>]+)\b",
+            html
+        )
+        if match:
+            doi = match.group(1).rstrip(").,;")
+            return self.fetch_reference_by_doi(doi)
+
+        return None
