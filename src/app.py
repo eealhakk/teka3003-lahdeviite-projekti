@@ -11,38 +11,52 @@ class App:
         while True:
             print("\n=== Valitse toiminto ===")
             print("1) Lisää uusi viite")
-            print("2) Lisää uusi viite DOI")
-            print("3) Listaa viitteet")
-            print("4) Vie BibTeX-tiedosto")
-            print("5) Muokkaa viitettä")
-            print("6) Poista viite")
-            print("7) Lisää uusi viite URL")            
-            print("8) Lopeta\n")
+            print("2) Listaa viitteet")
+            print("3) Vie BibTeX-tiedosto")
+            print("4) Muokkaa viitettä")
+            print("5) Poista viite")          
+            print("6) Lopeta\n")
 
 
 
             choice = input("Valinta: ").strip()
 
             if choice == "1":
-                self.add_reference()
+                self.add_reference_menu()
             elif choice == "2":
-                self.add_reference_by_doi()
-            elif choice == "3":
                 self.list_references()
-            elif choice == "4":
+            elif choice == "3":
                 self.reference_manager.export_bibtex("references.bib")
                 print("BibTeX-tiedosto references.bib luotu")
-            elif choice == "5":
+            elif choice == "4":
                 self.edit_reference()
-            elif choice == "6":
+            elif choice == "5":
                 self.delete_reference()
-            elif choice == "8":
+            elif choice == "6":
                 break
-            elif choice == "7":
-                self.add_reference_by_url()
             else:
                 print("Virheellinen valinta")
 
+     
+    def add_reference_menu(self):
+        """Alavalikko viitteen lisäämiseen"""
+        print("\n=== Lisää uusi viite ===")
+        print("1) Manuaalisesti")
+        print("2) DOI:lla")
+        print("3) URL:lla")
+        print("4) Takaisin\n")
+
+        value = input("Valinta: ").strip()
+
+        if value == "1":
+            self.add_reference()
+        elif value == "2":
+            self.add_reference_by_doi()
+        elif value == "3":
+            self.add_reference_by_url()
+        else:
+            return    
+       
     def list_references(self):
         """Metodi viitteiden listaamiseen"""
         print("\n1) Listaa tagin perusteella")
