@@ -406,3 +406,48 @@ class TestReferenceManager(unittest.TestCase):
         ref_manager = ReferenceManager("test.db")
         result = ref_manager.fetch_reference_by_doi("10.1234/virhe")
         self.assertIsNone(result)
+
+
+    # URL-tests
+    @patch("repositories.viite_repository.requests.get")
+    @patch.object(ReferenceManager, "fetch_reference_by_doi")
+    def test_fetch_reference_by_url_success(self, mock_fetch_doi, mock_get):
+        """URL-haku: sivulta löytyy DOI ja DOI-haku palauttaa viitteen."""
+        html = "random text doi:10.1097/01.ACM.0000524672.21238.b6 more text"
+
+        mock_resp = Mock()
+        mock_resp.raise_for_status.return_value = None
+        mock_resp.text = html
+        mock_get.return_value = mock_resp
+
+        expected = Reference("article", "x", {"title": "dummy"})
+        mock_fetch_doi.return_value = expected
+
+        ref = self.ref.fetch_reference_by_url("https://example.com/page")
+
+        self.assertIs(ref, expected)
+        mock_fetch_doi.assert_called_once_with("10.1097/01.ACM.0000524672.21238.b6")
+
+
+    @patch("repositories.viite_repository.requests.get")
+    def test_fetch_reference_by_url_no_doi_returns_none(self, mock_get):
+        """URL-haku: jos DOI:tä ei löydy sivulta, palautetaan None."""
+        mock_resp = Mock()
+        mock_resp.raise_for_status.return_value = None
+        mock_resp.text = "<html>No doi here</html>"
+        mock_get.return_value = mock_resp
+
+        ref = self.ref.fetch_reference_by_url("https://example.com/page")
+
+        self.assertIsNone(ref)
+
+
+    @patch("repositories.viite_repository.requests.get")
+    def test_fetch_reference_by_url_request_exception(self, mock_get):
+        """URL-haku: jos requests.get kaatuu, palautetaan None."""
+        from requests import RequestException
+        mock_get.side_effect = RequestException("HTTP error")
+
+        ref = self.ref.fetch_reference_by_url("https://example.com/page")
+
+        self.assertIsNone(ref)
