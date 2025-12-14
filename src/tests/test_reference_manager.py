@@ -3,6 +3,9 @@ import unittest
 import os
 from repositories.viite_repository import ReferenceManager
 
+from unittest.mock import patch, Mock
+from entities.refobj import Reference
+
 class TestReferenceManager(unittest.TestCase):
     """Testaa ReferenceManager-luokan toiminnallisuuksia."""
 
@@ -315,3 +318,91 @@ class TestReferenceManager(unittest.TestCase):
         """Testataan palauttaako virheen yritettäessä laittaa huonoa syötettä."""
         self.assertEqual(self.ref.filter_references("lol"),
                          "Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.\n")
+
+
+    @patch("repositories.viite_repository.requests.get")
+    def test_fetch_reference_by_doi_success(self, mock_get):
+        """Testaa onnistuneen DOI-haun ja Reference-olion palautuksen"""
+
+        fake_response = {
+            "message": {
+                "author": [
+                    {"family": "Mallory-Kani", "given": "Amy"}
+                ],
+                "title": ["Example Article"],
+                "issued": {"date-parts": [[2015]]},
+                "container-title": ["European Romantic Review"],
+                "volume": "26",
+                "page": "699-717"
+            }
+        }
+
+        mock_resp = Mock()
+        mock_resp.raise_for_status.return_value = None
+        mock_resp.json.return_value = fake_response
+        mock_get.return_value = mock_resp
+
+        doi = "10.1080/10509585.2015.1092083"
+        ref = self.ref.fetch_reference_by_doi(doi)
+
+        self.assertIsInstance(ref, Reference)
+        self.assertEqual(ref.ref_type, "article")
+        self.assertEqual(ref.key, doi)
+
+        self.assertEqual(ref.other_fields["author"], "Mallory-Kani, Amy")
+        self.assertEqual(ref.other_fields["title"], "Example Article")
+        self.assertEqual(ref.other_fields["journal"], "European Romantic Review")
+        self.assertEqual(ref.other_fields["year"], 2015)
+        self.assertEqual(ref.other_fields["volume"], "26")
+        self.assertEqual(ref.other_fields["pages"], "699-717")
+
+
+    @patch("repositories.viite_repository.requests.get")
+    def test_fetch_reference_by_doi_missing_author(self, mock_get):
+        """Testaa että puuttuva author asetetaan oletusarvoon '-'"""
+
+        fake_response = {
+            "message": {
+                "title": ["No Author Article"],
+                "issued": {"date-parts": [[2020]]},
+                "container-title": ["Test Journal"]
+            }
+        }
+
+        mock_resp = Mock()
+        mock_resp.raise_for_status.return_value = None
+        mock_resp.json.return_value = fake_response
+        mock_get.return_value = mock_resp
+
+        ref = self.ref.fetch_reference_by_doi("10.0000/noauthor")
+
+        self.assertEqual(ref.other_fields["author"], "-")
+        self.assertEqual(ref.other_fields["title"], "No Author Article")
+        self.assertEqual(ref.other_fields["year"], 2020)
+        self.assertEqual(ref.other_fields["journal"], "Test Journal")
+
+
+    @patch("repositories.viite_repository.requests.get")
+    def test_fetch_reference_by_doi_request_exception(self, mock_get):
+        """Testaa että DOI-haun HTTP-virhe palauttaa None"""
+        from repositories.viite_repository import ReferenceManager
+
+        # Mockataan että requests.get heittää RequestException
+        from requests import RequestException
+        mock_get.side_effect = RequestException("HTTP error")
+
+        ref_manager = ReferenceManager("test.db")
+        result = ref_manager.fetch_reference_by_doi("10.1234/virhe")
+        self.assertIsNone(result)
+
+    @patch("repositories.viite_repository.requests.get")
+    def test_fetch_reference_by_doi_general_exception(self, mock_get):
+        """Testaa että DOI-haun odottamaton virhe palauttaa None"""
+        from repositories.viite_repository import ReferenceManager
+
+        # Mockataan että requests.get heittää yleisen exceptionin
+        mock_get.side_effect = Exception("Unexpected error")
+
+        ref_manager = ReferenceManager("test.db")
+        result = ref_manager.fetch_reference_by_doi("10.1234/virhe")
+        self.assertIsNone(result)

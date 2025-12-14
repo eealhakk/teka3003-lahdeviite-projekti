@@ -92,6 +92,9 @@ class ReferenceManager:
         except requests.RequestException as e:
             print(f"DOI-haku epäonnistui: {e}")
             return None
+        except Exception as e:
+            print(f"Odottamaton virhe DOI-haussa: {e}")
+            return None
 
         data = response.json().get("message", {})
 
