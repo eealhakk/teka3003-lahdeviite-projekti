@@ -33,3 +33,7 @@ Structured Backlog:
 ### Lisenssi :balance_scale:
 
 [Projektin lisenssi GPLv3](LICENCE)
+
+### Sprint 2 Retrospektiivi 📓
+
+[Retro.md](https://github.com/eealhakk/teka3003-lahdeviite-projekti/blob/main/retro.md)
