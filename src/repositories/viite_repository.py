@@ -1,49 +1,44 @@
 """Viitteiden hallinta ja käsittely."""
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
+import json
+import re
+import requests
 from repositories.database_manager import DatabaseManager
-from entities.refobj import Article, Inproceeding, Book
+from entities.refobj import Reference
+
+
 
 class ReferenceManager:
     """Vastaa viitteiden käsittelystä tietokannassa."""
     def __init__(self, db_name="references.db"):
         self.db_manager = DatabaseManager(db_name)
 
+    def _row_to_reference(self, row):
+        """
+        Palauttaa tuplen, jossa id ja 
+        tietokannasta haettu refi oliona
+        """
+        ref_id, ref_type, key, other_fields_json = row
+        other_fields = json.loads(other_fields_json) if other_fields_json else {}
+        return (ref_id, Reference(ref_type, key, other_fields))
+
     def listaa(self):
         """Palauttaa listauksen kaikista viitteistä tietokannassa."""
-        inproceedings = self.db_manager.get_inproceedings()
-        articles = self.db_manager.get_articles()
-        books = self.db_manager.get_books()
+        rows = self.db_manager.get_reference()
+        return [self._row_to_reference(r) for r in rows]
 
-        listing = "Inproceedings:\n"
-        for row in inproceedings:
-            listing += str(row) + "\n"
-            listing += (
-                "tagit: " 
-                + ", ".join(self.get_reference_tags("inproceeding", row[0]))
-                + "\n\n"
-            )
+    def entry_info(self, key=None):
+        """Hakee tietyn viitteen tiedot tietokannasta."""
+        row = self.db_manager.get_reference(key=key)
+        if not row:
+            return None
+        _, ref_obj = self._row_to_reference(row[0])
+        return ref_obj
 
-        listing += "\nArticles:\n"
-        for row in articles:
-            listing += str(row) + "\n"
-            listing += (
-                "tagit: " 
-                + ", ".join(self.get_reference_tags("article", row[0]))
-                + "\n\n"
-            )
-
-
-        listing += "\nBooks:\n"
-        for row in books:
-            listing += str(row) + "\n"
-            listing += "tagit: " + ", ".join(self.get_reference_tags("book", row[0])) + "\n\n"
-
-        return listing
-
-    def get_reference_tags(self, ref_type, reference_id):
+    def get_reference_tags(self, reference_id):
         """Hakee viitteen tagit tietokannasta."""
-        return self.db_manager.get_tags_for_ref(ref_type, reference_id)
+        return self.db_manager.get_tags_for_ref(reference_id)
 
     def get_references_by_tag(self, tag_name):
         """Hakee viitteet tietokannasta tagin perusteella."""
@@ -51,98 +46,125 @@ class ReferenceManager:
 
     def filter_references(self, arvot):
         """Siistitään filter syötettä ja välitetään filtteröinti"""
-        try:
-            # Muutetaan syöte listaksi kokonaislukuja
-            choices = [int(x.strip()) for x in arvot.split(",")]
-        except ValueError:
-            print("Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.")
-            return "Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.\n"
-        print("=====================================")
-        #print (self.db_manager.filter_references_db(choices))
-        result = self.db_manager.filter_references_db(choices)
-        print(result)
-        return(str(self.db_manager.filter_references_db(choices)))
 
-    def entry_info(self, entry_type, target_key):
-        """Hakee tietyn viitteen tiedot tietokannasta."""
-        fetch_map = {
-            "inproceeding": (self.db_manager.get_inproceedings, Inproceeding),
-            "article": (self.db_manager.get_articles, Article),
-            "book": (self.db_manager.get_books, Book),
-        }
+        # Muutetaan syöte listaksi
+        choices = [x.strip() for x in arvot.split(",")]
 
-        if entry_type not in fetch_map:
-            return None
-
-        fetcher, constructor = fetch_map[entry_type]
-        rows = fetcher(target_key)
-
-        if not rows:
-            return None
-
-        return constructor(*rows[0][1:])
+        rows = self.db_manager.filter_references_db(choices)
+        return [self._row_to_reference(r) for r in rows]
 
     def edit_entry(self, entry_type, target_key, **kwargs):
         """Muokkaa tietyn viitteen tietoja tietokannassa."""
         self.db_manager.edit_entry(entry_type, target_key, **kwargs)
 
-    def delete_entry(self, entry_type, target_key):
+    def delete_entry(self, target_key):
         """Poistaa tietyn viitteen tietokannassa."""
-        self.db_manager.delete_entry(entry_type, target_key)
+        self.db_manager.delete_entry(target_key)
 
-    def add_book(self, key, author, title, year, publisher, tags=None):
-        """lisää kirjan tietokantaan"""
+    def add_entry(self, entry_type, key, other_elements = None, tags=None):
+        """Lisää uuden viitteen tietokantaan."""
+        if other_elements is None:
+            other_elements = {}
         if tags is None:
             tags = []
-        self.db_manager.insert_book(Book(key, author, title, year, publisher), tags)
+        entry = Reference(entry_type, key, other_elements)
+        return self.db_manager.insert_reference(entry, tags)
 
-    def add_article(self, key, author, title, journal, year, volume, pages, tags=None):
-        """lisää artikkelin tietokantaan"""
-        if tags is None:
-            tags = []
-        self.db_manager.insert_article(
-            Article(key, author, title, journal, year, volume, pages),
-            tags
-        )
-
-    def add_inproceeding(self, key, author, title, year, booktitle, tags=None):
-        """lisää inproceedingin tietokantaan"""
-        if tags is None:
-            tags = []
-        self.db_manager.insert_inproceeding(Inproceeding(key, author, title, year, booktitle), tags)
-
-    def export_bibtex(self, filename): # pylint: disable=too-many-locals #TODO too many?
+    def export_bibtex(self, filename): # pylint: disable=too-many-locals
         """Vie kaikki viitteet BibTeX-tiedostoon."""
-        inproceedings = self.db_manager.get_inproceedings()
-        articles = self.db_manager.get_articles()
-        books = self.db_manager.get_books()
+        references = self.db_manager.get_reference()
 
         with open(filename, "w", encoding="utf-8") as f:
-            for row in inproceedings:
-                _, key, author, title, year, booktitle = row
-                f.write(f"@inproceedings{{{key},\n")
-                f.write(f"  author = {{{author}}},\n")
-                f.write(f"  title = {{{title}}},\n")
-                f.write(f"  booktitle = {{{booktitle}}},\n")
-                f.write(f"  year = {{{year}}}\n")
+            for row in references:
+                _, ref_type, key, raw_fields = row
+
+                fields = json.loads(raw_fields) if raw_fields else {}
+
+                f.write(f"@{ref_type}{{{key},\n")
+
+                for name, value in fields.items():
+                    f.write(f"  {name} = {{{value}}},\n")
+
                 f.write("}\n\n")
 
-            for row in articles:
-                _, key, author, title, journal, year, volume, pages = row
-                f.write(f"@article{{{key},\n")
-                f.write(f"  author = {{{author}}},\n")
-                f.write(f"  title = {{{title}}},\n")
-                f.write(f"  journal = {{{journal}}},\n")
-                f.write(f"  year = {{{year}}},\n")
-                f.write(f"  volume = {{{volume}}},\n")
-                f.write(f"  pages = {{{pages}}}\n")
-                f.write("}\n\n")
+    def fetch_reference_by_doi(self, doi):
+        """Hakee viitteen Crossrefistä ja palauttaa Reference-oliona."""
+        url = f"https://api.crossref.org/works/{doi}"
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+        except requests.RequestException as e:
+            print(f"DOI-haku epäonnistui: {e}")
+            return None
+        except Exception as e: # pylint: disable=broad-exception-caught
+            print(f"Odottamaton virhe DOI-haussa: {e}")
+            return None
 
-            for row in books:
-                _, key, author, title, year, publisher = row
-                f.write(f"@book{{{key},\n")
-                f.write(f"  author = {{{author}}},\n")
-                f.write(f"  title = {{{title}}},\n")
-                f.write(f"  year = {{{year}}},\n")
-                f.write(f"  publisher = {{{publisher}}}\n")
-                f.write("}\n\n")
+        data = response.json().get("message", {})
+
+        # Authors
+        author_list = data.get("author", [])
+        if author_list:
+            authors = " and ".join(
+                f"{a.get('family','')}, {a.get('given','')}"
+                for a in author_list
+            )
+        else:
+            authors = "-"  # oletusarvo
+        title = data.get("title", ["-"])[0]
+        year = data.get("issued", {}).get("date-parts", [[0]])[0][0]
+        journal = data.get("container-title", ["-"])[0]
+        volume = data.get("volume", "-")
+        pages = data.get("page", "-")
+
+        # Rakennetaan other_fields-dict
+        other_fields = {
+            "author": authors,
+            "title": title,
+            "journal": journal,
+            "year": year,
+            "volume": volume,
+            "pages": pages
+        }
+
+        return Reference(
+            ref_type="article",
+            key=doi,
+            other_fields=other_fields
+        )
+
+    def fetch_reference_by_url(self, url):
+        """Hakee URL:n ja yrittää löytää DOI:n sivulta."""
+
+        try:
+            response = requests.get(
+                url,
+                timeout=10,
+                headers={"User-Agent": "Mozilla/5.0"}
+            )
+            response.raise_for_status()
+        except requests.RequestException:
+            return None
+
+        html = response.text
+
+        # 1) Etsi doi.org linkki sivulta
+        match = re.search(
+            r"doi\.org/(10\.\d{4,9}/[^\s\"\'<>]+)",
+            html,
+            re.IGNORECASE
+        )
+        if match:
+            doi = match.group(1).rstrip(").,;")
+            return self.fetch_reference_by_doi(doi)
+
+        # 2) Fallback: etsitään DOI tekstinä
+        match = re.search(
+            r"\b(10\.\d{4,9}/[^\s\"\'<>]+)\b",
+            html
+        )
+        if match:
+            doi = match.group(1).rstrip(").,;")
+            return self.fetch_reference_by_doi(doi)
+
+        return None

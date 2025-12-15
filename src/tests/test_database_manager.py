@@ -22,6 +22,6 @@ class TestDatabaseManager(unittest.TestCase):
         conn.close()
 
         #Varmistetaan, että kaikki odotetut taulut ovat olemassa
-        assert "inproceeding" in table_names
-        assert "article" in table_names
-        assert "book" in table_names
+        assert "reference" in table_names
+        assert "tags" in table_names
+        assert "reference_tag" in table_names

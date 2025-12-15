@@ -2,38 +2,42 @@
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 import sqlite3
-from entities.refobj import Article, Inproceeding, Book
+import json
+#from entities.refobj import Reference
 
-VPL11 = Inproceeding(
-    key="VPL11",
-    author="Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
-    title="Extreme Apprenticeship Method in Teaching Programming for Beginners.",
-    year=2011,
-    booktitle=(
-        "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on "
-        "Computer science education"
-    )
-)
 
-CBH91 = Article(
-    key="CBH91",
-    author="Allan Collins and John Seely Brown and Ann Holum",
-    title="Cognitive apprenticeship: making thinking visible",
-    journal="American Educator",
-    year=1991,
-    volume=6,
-    pages="38--46"
-)
-
-MARTIN09 = Book(
-    key="Martin09",
-    author="Martin, Robert",
-    title="Clean Code: A Handbook of Agile Software Craftsmanship",
-    year=2008,
-    publisher="Prentice Hall"
-)
-
-entries = [VPL11, CBH91, MARTIN09]
+#Sisäistä testidataa:
+#VPL11 = Reference(
+#    ref_type="inproceeding",
+#    key="VPL11",
+#    other_fields={"author": "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
+#                   "title": "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
+#                   "year": 2011,
+#                   "booktitle": ("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium "
+#                                 "on Computer science education")}
+#)
+#
+#CBH91 = Reference(
+#    ref_type="article",
+#    key="CBH91",
+#    other_fields={"author": "Allan Collins and John Seely Brown and Ann Holum",
+#                  "title": "Cognitive apprenticeship: making thinking visible",
+#                  "journal": "American Educator",
+#                  "year": 1991,
+#                  "volume": 6,
+#                  "pages": "38--46"}
+#)
+#
+#MARTIN09 = Reference(
+#    ref_type="book",
+#    key="Martin09",
+#    other_fields={"author": "Martin, Robert",
+#                  "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+#                  "year": 2008,
+#                  "publisher": "Prentice Hall"}
+#)
+#
+#entries = [VPL11, CBH91, MARTIN09]
 
 
 class DatabaseManager:
@@ -43,10 +47,10 @@ class DatabaseManager:
         self.create_database()
 
         #testidata
-        #if self.connect().execute("SELECT COUNT(*) FROM inproceeding;").fetchone()[0] == 0:
-        #    self.insert_inproceeding(VPL11)
-        #    self.insert_article(CBH91)
-        #    self.insert_book(MARTIN09)
+        #if len(self.get_reference()) == 0:
+        #    self.insert_reference(VPL11)
+        #    self.insert_reference(CBH91)
+        #    self.insert_reference(MARTIN09)
 
     def connect(self):
         """Yhdistää tietokantaan."""
@@ -59,41 +63,13 @@ class DatabaseManager:
         connection = self.connect()
         cursor = connection.cursor()
 
-        #inproceedings
+        #lähdeviite
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS inproceeding (
+        CREATE TABLE IF NOT EXISTS reference (
             id INTEGER PRIMARY KEY,
+            type TEXT NOT NULL,
             key TEXT NOT NULL UNIQUE,
-            author TEXT NOT NULL,
-            title TEXT NOT NULL,
-            year INTEGER NOT NULL,
-            booktitle TEXT NOT NULL
-        );
-        """)
-
-        #article
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS article (
-            id INTEGER PRIMARY KEY,
-            key TEXT NOT NULL UNIQUE,
-            author TEXT NOT NULL,
-            title TEXT NOT NULL,
-            journal TEXT NOT NULL,
-            year INTEGER NOT NULL,
-            volume INTEGER NOT NULL,
-            pages TEXT NOT NULL
-        );
-        """)
-
-        #book
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS book (
-            id INTEGER PRIMARY KEY,
-            key TEXT NOT NULL UNIQUE,
-            author TEXT NOT NULL,
-            title TEXT NOT NULL,
-            year INTEGER NOT NULL,
-            publisher TEXT NOT NULL
+            other_fields TEXT
         );
         """)
 
@@ -107,29 +83,11 @@ class DatabaseManager:
 
         # tag yhdistetaulut
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS inproceeding_tag (
+        CREATE TABLE IF NOT EXISTS reference_tag (
             reference_id INTEGER NOT NULL,
             tag_id INTEGER NOT NULL,
-            FOREIGN KEY (reference_id) REFERENCES inproceeding(id),
-            FOREIGN KEY (tag_id) REFERENCES tags(id),
-            PRIMARY KEY (reference_id, tag_id)
-        );
-        """)
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS article_tag (
-            reference_id INTEGER NOT NULL,
-            tag_id INTEGER NOT NULL,
-            FOREIGN KEY (reference_id) REFERENCES article(id),
-            FOREIGN KEY (tag_id) REFERENCES tags(id),
-            PRIMARY KEY (reference_id, tag_id)
-        );
-        """)
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS book_tag (
-            reference_id INTEGER NOT NULL,
-            tag_id INTEGER NOT NULL,
-            FOREIGN KEY (reference_id) REFERENCES book(id),
-            FOREIGN KEY (tag_id) REFERENCES tags(id),
+            FOREIGN KEY (reference_id) REFERENCES reference(id) ON DELETE CASCADE,
+            FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
             PRIMARY KEY (reference_id, tag_id)
         );
         """)
@@ -167,314 +125,193 @@ class DatabaseManager:
         conn.close()
         return tag_id
 
-    def get_tags_for_ref(self, ref_type, reference_id):
+    def get_tags_for_ref(self, reference_id):
         """Hakee viitteen tagit tietokannasta"""
-        table_map = {
-            "inproceeding": "inproceeding_tag",
-            "article": "article_tag",
-            "book": "book_tag",
-        }
-        link_table = table_map[ref_type]
-
         conn = self.connect()
         cur = conn.cursor()
-        cur.execute(f"""
+        cur.execute("""
             SELECT t.name
             FROM tags t
-            JOIN {link_table} lt ON t.id = lt.tag_id
-            WHERE lt.reference_id = ?;
+            JOIN reference_tag rt ON t.id = rt.tag_id
+            WHERE rt.reference_id = ?;
         """, (reference_id,))
         tags = [row[0] for row in cur.fetchall()]
         conn.close()
-
         return tags
 
     def get_references_by_tag(self, tag_name):
-        """Hakee viitteet tagin perusteella"""
+        """Hakee viitteet tagin perusteella tietokannasta"""
         tag_id = self.get_tag_id(tag_name)
         if not tag_id:
             return []
 
         conn = self.connect()
         cur = conn.cursor()
-
-        results = []
-
-        table_map = {
-            "inproceeding": "inproceeding_tag",
-            "article": "article_tag",
-            "book": "book_tag",
-        }
-
-        for ref_type, link_table in table_map.items():
-            cur.execute(f"""
-                SELECT r.*
-                FROM {ref_type} r
-                JOIN {link_table} lt ON r.id = lt.reference_id
-                WHERE lt.tag_id = ?;
-            """, (tag_id,))
-            rows = cur.fetchall()
-            results.extend((ref_type, row) for row in rows)
-
+        cur.execute("""
+            SELECT r.*
+            FROM reference r
+            JOIN reference_tag rt ON r.id = rt.reference_id
+            WHERE rt.tag_id = ?;
+        """, (tag_id,))
+        rows = cur.fetchall()
         conn.close()
-        return results
+        return rows
 
-    def add_tag_to_ref(self, ref_type, reference_id, tag_name):
+    def add_tag_to_ref(self, reference_id, tag_name):
         """Liittää tagin viitteeseen"""
-        table_map = {
-            "inproceeding": "inproceeding_tag",
-            "article": "article_tag",
-            "book": "book_tag",
-        }
-        if ref_type not in table_map:
-            raise ValueError(f"Tuntematon tyyppi: {ref_type}")
-
         tag_id = self.get_or_create_tag(tag_name)
-        link_table = table_map[ref_type]
 
         conn = self.connect()
         cur = conn.cursor()
         cur.execute(
-            f"INSERT OR IGNORE INTO {link_table} (reference_id, tag_id) VALUES (?, ?);",
+            "INSERT OR IGNORE INTO reference_tag (reference_id, tag_id) VALUES (?, ?);",
             (reference_id, tag_id),
         )
         conn.commit()
         conn.close()
 
     # lisäykset tietokantaan
-    def insert_inproceeding(self, inproceeding, tags=None):
-        """Lisää inproceeding tietokantaan."""
+    def insert_reference(self, reference, tags=None):
+        """Lisää viitteen tietokantaan."""
         if tags is None:
             tags = []
-        connection = self.connect()
-        cursor = connection.cursor()
-        cursor.execute(
-            """
-            INSERT INTO inproceeding (key, author, title, year, booktitle)
-            VALUES (?, ?, ?, ?, ?);
-            """,
-            (
-                inproceeding.key,
-                inproceeding.author,
-                inproceeding.title,
-                inproceeding.year,
-                inproceeding.booktitle,
-            ),
-        )
-        new_id = cursor.lastrowid
-        connection.commit()
-        connection.close()
 
-        for tag in tags:
-            self.add_tag_to_ref("inproceeding", new_id, tag)
-        return new_id
+        other_fields = reference.other_fields
+        if not isinstance(other_fields, str):
+            other_fields = json.dumps(other_fields)
 
-    def insert_article(self, article, tags=None):
-        """Lisää article tietokantaan."""
-        if tags is None:
-            tags = []
-        connection = self.connect()
-        cursor = connection.cursor()
-        cursor.execute(
-            """
-            INSERT INTO article (key, author, title, journal, year, volume, pages)
-            VALUES (?, ?, ?, ?, ?, ?, ?);
-            """,
-            (
-                article.key,
-                article.author,
-                article.title,
-                article.journal,
-                article.year,
-                article.volume,
-                article.pages,
-            ),
-        )
-        new_id = cursor.lastrowid
-        connection.commit()
-        connection.close()
-
-        for tag in tags:
-            self.add_tag_to_ref("article", new_id, tag)
-        return new_id
-
-    def insert_book(self, book, tags=None):
-        """Lisää book tietokantaan."""
-        if tags is None:
-            tags = []
-        connection = self.connect()
-        cursor = connection.cursor()
-        cursor.execute(
-            """
-            INSERT INTO book (key, author, title, year, publisher)
-            VALUES (?, ?, ?, ?, ?);
-            """,
-            (
-                book.key,
-                book.author,
-                book.title,
-                book.year,
-                book.publisher
+        try:
+            connection = self.connect()
+            cursor = connection.cursor()
+            cursor.execute(
+                """
+                INSERT INTO reference (type, key, other_fields)
+                VALUES (?, ?, ?);
+                """,
+                (
+                    reference.ref_type,
+                    reference.key,
+                    other_fields
+                ),
             )
-        )
-        new_id = cursor.lastrowid
-        connection.commit()
-        connection.close()
-        for tag in tags:
-            self.add_tag_to_ref("book", new_id, tag)
-        return new_id
+            new_id = cursor.lastrowid
+            connection.commit()
+            connection.close()
+
+            for tag in tags:
+                self.add_tag_to_ref(new_id, tag)
+            return new_id
+        except sqlite3.IntegrityError:
+            return False
 
     # haut tietokannasta
-    def get_inproceedings(self, key=None):
-        """Hakee inproceedingin tai kaikki inproceedingit tietokannasta"""
+    def get_reference(self, key=None, ref_type=None):
+        """
+        Hakee yhden viitteen avaimen perusteella,
+        viitteen perusteella, molempien perusteella,
+        tai kaikki viitteet tietokannasta
+        """
         connection = self.connect()
         cursor = connection.cursor()
-        if key:
-            cursor.execute("SELECT * FROM inproceeding WHERE key = ?;", (key,))
+        if ref_type and key:
+            cursor.execute("SELECT * FROM reference WHERE type = ? AND key = ?;", (ref_type, key,))
+        elif ref_type:
+            cursor.execute("SELECT * FROM reference WHERE type = ?;", (ref_type,))
+        elif key:
+            cursor.execute("SELECT * FROM reference WHERE key = ?;", (key,))
         else:
-            cursor.execute("SELECT * FROM inproceeding;")
+            cursor.execute("SELECT * FROM reference;")
         rows = cursor.fetchall()
         connection.close()
         return rows
 
-    def get_articles(self, key=None):
-        """Hakee articlen tai kaikki articlet tietokannasta"""
-        connection = self.connect()
-        cursor = connection.cursor()
-        if key:
-            cursor.execute("SELECT * FROM article WHERE key = ?;", (key,))
-        else:
-            cursor.execute("SELECT * FROM article;")
-        rows = cursor.fetchall()
-        connection.close()
-        return rows
-
-    def get_books(self, key=None):
-        """Hakee bookin tai kaikki bookit tietokannasta"""
-        connection = self.connect()
-        cursor = connection.cursor()
-        if key:
-            cursor.execute("SELECT * FROM book WHERE key = ?;", (key,))
-        else:
-            cursor.execute("SELECT * FROM book;")
-        rows = cursor.fetchall()
-        connection.close()
-        return rows
 
     # muokkaus tietokannassa
+    # pylint: disable=too-many-locals
     def edit_entry(self, entry_type, target_key, **kwargs):
         """Muokkaa tietokannan merkintää."""
-        connection = self.connect()
-        cursor = connection.cursor()
+        conn = self.connect()
+        cur = conn.cursor()
 
-        fields = ', '.join([f"{k} = ?" for k in kwargs])
-        values = list(kwargs.values())
-        values.append(target_key)
+        # Haetaan nykyiset other_fields
+        cur.execute('SELECT other_fields FROM reference WHERE "key" = ? AND type = ?;',
+                    (target_key, entry_type))
+        row = cur.fetchone()
+        if not row:
+            conn.close()
+            return False
 
-        query = f"UPDATE {entry_type} SET {fields} WHERE key = ?;"
-        cursor.execute(query, values)
-
-        connection.commit()
-        connection.close()
-
-    def delete_entry(self, entry_type, target_key):
-        """Poistaa tietokannan merkinnän ja siihen liitetyt tagit"""
-        table_map = {
-            "inproceeding": "inproceeding_tag",
-            "article": "article_tag",
-            "book": "book_tag",
-        }
-        link_table = table_map.get(entry_type)
-        if not link_table:
-            raise ValueError(f"Tuntematon entry_type: {entry_type}")
-
-        connection = self.connect()
+        raw = row[0] or "{}"
         try:
-            cursor = connection.cursor()
+            other_fields = json.loads(raw)
+            if not isinstance(other_fields, dict):
+                other_fields = {}
+        except json.JSONDecodeError:
+            other_fields = {}
 
-            cursor.execute(f'SELECT id FROM {entry_type} WHERE "key" = ?', (target_key,))
-            row = cursor.fetchone()
-            if not row:
-                return False
-            ref_id = row[0]
+        # Jos tyyppi tai avain on annettu, käsitellään ne erikseen
+        update_cols = {}
+        if "type" in kwargs:
+            update_cols["type"] = kwargs.pop("type")
 
-            cursor.execute(f"DELETE FROM {link_table} WHERE reference_id = ?", (ref_id,))
-            cursor.execute(f'DELETE FROM {entry_type} WHERE id = ?', (ref_id,))
+        new_key = kwargs.pop("key", None)
 
-            connection.commit()
-            return True
-        finally:
-            connection.close()
+        # Päivitetään muut kentät other_fieldsiin
+        for field, value in kwargs.items():
+            other_fields[field] = value
+
+        update_cols["other_fields"] = json.dumps(other_fields, ensure_ascii=False)
+
+        if new_key is not None:
+            update_cols["key"] = new_key
+
+        fields_sql = ", ".join(f'{col} = ?' for col in update_cols)
+        values = list(update_cols.values()) + [target_key]
+
+        cur.execute(f'UPDATE reference SET {fields_sql} WHERE "key" = ?;', values)
+
+        changed = cur.rowcount > 0
+        conn.commit()
+        conn.close()
+        return changed
+
+    def delete_entry(self, target_key):
+        """Poistaa tietokannan merkinnän ja siihen liitetyt tagit"""
+        conn = self.connect()
+        cur = conn.cursor()
+        cur.execute('DELETE FROM reference WHERE key = ?;', (target_key,))
+        deleted = cur.rowcount > 0
+        conn.commit()
+        conn.close()
+        return deleted
 
     def filter_references_db(self, conditions): # pylint: disable=too-many-locals
         """Hakee tietokannasta avaimilla oikeat tiedot"""
-        # TODO: Tämän voi toteuttaa hakuna tietokannasta # pylint: disable=W0511
-        # jos kantaan tulee uusia tauluja
-        # Mapit pääluokille ja attribuuteille
-        classes_map = {1: "inproceeding", 2: "article", 3: "book"}
-        attributes_map = {
-            4: "key", 5: "author", 6: "title", 7: "year",
-            8: "publisher", 9: "volume", 10: "pages", 11: "booktitle"
-        }
 
-        # Tarkistetaan, löytyykö 0 listasta
-        list_all = 0 in conditions
+        field = conditions[0]
+        if len(conditions) >= 2:
+            field_value = conditions[1]
+        else: field_value = ''
 
-        # Valitut luokat ja attribuutit
-        selected_classes = [classes_map[c] for c in conditions if c in classes_map]
-        selected_attributes = [attributes_map[c] for c in conditions if c in attributes_map]
+        connection = self.connect()
+        cursor = connection.cursor()
 
-        # Jos listataan kaikki, valitaan kaikki luokat ja tyhjennetään
-        # attribuutit (kaikki tulostetaan)
-        if list_all:
-            selected_classes = ["inproceeding", "article", "book"]
-            selected_attributes = []  # tyhjä lista = kaikki attribuutit tulostetaan
-
-        fetch_map = {
-            "inproceeding": (self.get_inproceedings, Inproceeding),
-            "article": (self.get_articles, Article),
-            "book": (self.get_books, Book),
-        }
-
-        output_lines = []
-
-        # Käydään valitut luokat läpi TODO Logiikka alla kesken
-        # TODO Olisiko mahdollista saada tulostuksen sijasta
-        # palautus stringinä? Helpompi testata. Muut luokat
-        # muutettu palautettavan stringin logiikalle. -Joonatan
-        for cls_name in selected_classes:
-
-            fetch_func, cls_type = fetch_map[cls_name]
-
-            # Haetaan kaikki tietueet tietokannasta
-            rows = fetch_func()
-
-            # Käydään tietueet läpi
-            for row in rows:
-                # Luodaan objekti rivin tiedoista
-                obj = cls_type(*row[1:])
-
-                # Jos listataan kaikki tai attribuuteja ei ole erikseen valittu,
-                # tulostetaan koko objekti
-                if list_all or not selected_attributes:
-                    #print(obj.__class__.__name__)
-                    output_lines.append(obj.__class__.__name__)
-                    #print(obj)
-                    for attr, value in obj.__dict__.items():
-                        if not attr.startswith("_"):
-                            #print(f"{attr}: {value}")
-                            output_lines.append(f"{attr}: {value}")
-                else:
-                    # Tulostetaan vain valitut attribuutit
-                    #print(obj.__class__.__name__)
-                    output_lines.append(obj.__class__.__name__)
-                    output = []
-                    for attr in selected_attributes:
-                        if hasattr(obj, attr):
-                            output.append(f"{attr}: {getattr(obj, attr)}")
-                    #print(",\n".join(output))
-                    output_lines.append(",\n".join(output))
-                    output_lines.append("=" * 40)
-
-                #print("-"*40)
-        return "\n".join(output_lines)
+        if field == "type":
+            cursor.execute("SELECT * FROM reference WHERE type LIKE ?;",(field_value,))
+        elif field == "id":
+            cursor.execute("SELECT * FROM reference WHERE id LIKE ?;",(field_value,))
+        elif field == "key":
+            cursor.execute("SELECT * FROM reference WHERE key LIKE ?;",(field_value,))
+        else:
+            cursor.execute("""
+                           SELECT * FROM reference
+                           WHERE other_fields LIKE ?
+                           OR other_fields LIKE ?;
+                           """,
+                           (
+                               '%'+field+'____'+field_value+'%', # jos muodossa "year": "2008"
+                               '%'+field+'___'+field_value+'%' # jos muodossa "year": 2008
+                            ))
+        rows = cursor.fetchall()
+        connection.close()
+        return rows

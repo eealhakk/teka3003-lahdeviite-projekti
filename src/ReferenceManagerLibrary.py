@@ -22,21 +22,57 @@ class ReferenceManagerLibrary:
     # pylint: disable=too-many-arguments, too-many-positional-arguments
     def add_book(self, key, author, title, year, publisher, tags=None):
         """kirjan lisääminen"""
-        self.ref.add_book(key, author, title, year, publisher, tags)
+        self.ref.add_entry(
+            entry_type="book",
+            key=key,
+            other_elements={
+                "author": author,
+                "title": title,
+                "year": int(year),
+                "publisher": publisher,
+                "tags": tags
+            }
+        )
 
     # pylint: disable=too-many-arguments, too-many-positional-arguments
     def add_article(self, key, author, title, journal, year, volume, pages, tags=None):
         """artikkelin lisääminen"""
-        self.ref.add_article(key, author, title, journal, year, volume, pages, tags)
+        self.ref.add_entry(
+            entry_type="article",
+            key=key,
+            other_elements={
+                "author": author,
+                "title": title,
+                "journal": journal,
+                "year": int(year),
+                "volume": volume,
+                "pages": pages,
+                "tags": tags
+            }
+        )
 
     # pylint: disable=too-many-arguments, too-many-positional-arguments
     def add_inproceeding(self, key, author, title, year, booktitle, tags=None):
         """inproceedings lisääminen"""
-        self.ref.add_inproceeding(key, author, title, year, booktitle, tags)
+        self.ref.add_entry(
+            entry_type="inproceedings",
+            key=key,
+            other_elements={
+                "author": author,
+                "title": title,
+                "year": int(year),
+                "booktitle": booktitle,
+                "tags": tags
+            }
+        )
 
     def listaa(self):
         """listaus"""
-        return self.ref.listaa()
+        refs = self.ref.listaa()
+        keys = []
+        for _, ref in refs:
+            keys.append(ref.key)
+        return " ".join(keys)
 
     def export_bibtex_file(self, filename=None):
         """Vie viitteet BibTeX-tiedostoon"""

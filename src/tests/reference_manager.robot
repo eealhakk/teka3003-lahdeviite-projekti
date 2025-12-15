@@ -4,27 +4,27 @@ Test Setup    Setup Database And ReferenceManager
 
 *** Test Cases ***
 Add Single Book And Verify
-    Add Book To Database    BOOK1    Author One    Title One    2021    Publisher One    tag1,tag2
-    Verify Reference In Database    BOOK1
+    Add Book To Database    Martin09    Martin    Clean Code: A Handbook of Agile Software Craftsmanship    2008    Prentice Hall    Agile,Development
+    Verify Reference In Database    Martin09
 
 Add Article And Verify
-    Add Article To Database    ART1    Author Two    Title Two    Journal One    2022    1    10    tag3
-    Verify Reference In Database    ART1
+    Add Article To Database    CBH91    Allan Collins and John Seeley Brown and Ann Holum    Cognitive apprenticeship: making thinking visible    American Educator    1991    6    38--46
+    Verify Reference In Database    CBH91
 
 Add Inproceeding And Verify
-    Add Inproceeding To Database    INP1    Author Three    Title Three    2023    INP Booktitle    tag4,tag5
-    Verify Reference In Database    INP1
+    Add Inproceeding To Database    VPL11    Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti    Extreme Apprenticeship Method in Teaching Programming for Beginners    2011    SIGCSE    Eeppinen,klassikko
+    Verify Reference In Database    VPL11
 
 List Shows Multiple References
-    Add Book To Database    BOOK2    A    T    2021    P
-    Add Article To Database    ART1    A2    T2    J    2022    1    10
-    Add Inproceeding To Database    INP1    A3    T3    2023    B
+    Add Book To Database    Martin09    Martin    Clean Code: A Handbook of Agile Software Craftsmanship    2008    Prentice Hall    Agile,Development
+    Add Article To Database    CBH91    Allan Collins and John Seeley Brown and Ann Holum    Cognitive apprenticeship: making thinking visible    American Educator    1991    6    38--46
+    Add Inproceeding To Database    VPL11    Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti    Extreme Apprenticeship Method in Teaching Programming for Beginners    2011    SIGCSE    Eeppinen,klassikko
 
-    Verify Reference In Database  BOOK2
+    Verify Reference In Database  CBH91
 
 Export Book To BibTeX
-    Add Book    BOOK1    Author One    Title One    2021    Publisher One
+    Add Book    Martin09    Martin    Clean Code: A Handbook of Agile Software Craftsmanship    2008    Prentice Hall    Agile,Development
     Export Bibtex File
     Bib File Should Exist
-    Bib File Should Contain  @book{BOOK1,
+    Bib File Should Contain  @book{Martin09,
 
