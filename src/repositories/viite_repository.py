@@ -2,11 +2,11 @@
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 import json
+import re
+import requests
 from repositories.database_manager import DatabaseManager
 from entities.refobj import Reference
 
-import requests
-import re
 
 
 class ReferenceManager:

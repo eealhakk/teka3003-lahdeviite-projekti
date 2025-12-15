@@ -1,9 +1,10 @@
 """Testit ReferenceManager-luokalle"""
 import unittest
 import os
+from unittest.mock import patch, Mock
+from requests import RequestException
 from repositories.viite_repository import ReferenceManager
 
-from unittest.mock import patch, Mock
 from entities.refobj import Reference
 
 class TestReferenceManager(unittest.TestCase):
@@ -301,23 +302,25 @@ class TestReferenceManager(unittest.TestCase):
 
     def test_filter_references(self):
         """Testaa että filter_references_db palauttaa oikean stringin (Book + key + author)."""
-
-        # 3 = Book, 4 = key, 5 = author
-        result = self.ref.db_manager.filter_references_db([3, 4, 5])
-
-        self.assertIn("Book", result)
-
-        self.assertIn("key: TEST1", result)
-        self.assertIn("author: Test author1", result)
-
-        self.assertNotIn("year:", result)
-        self.assertNotIn("publisher:", result)
+        result = ''
+        for reference in self.ref.filter_references("author,Martin, Robert"):
+            reference_tags = self.ref.get_reference_tags(reference[0])
+            result += (f"---\n\n{reference[1]}\ntags: {reference_tags}")
+        self.assertEqual(result,
+                         "---\n\n" +
+                         "Type: book\n" +
+                        "Key: Martin09\n" +
+                        "author: Martin, Robert\n" +
+                        "title: Clean Code: A Handbook of Agile Software Craftsmanship\n" +
+                        "year: 2008\n" +
+                        "publisher: Prentice Hall\n" +
+                        "tags: ['Agile', 'Development']")
 
 
     def test_filter_references_bad_input(self):
-        """Testataan palauttaako virheen yritettäessä laittaa huonoa syötettä."""
-        self.assertEqual(self.ref.filter_references("lol"),
-                         "Virheellinen syöte. Käytä numeroita pilkuilla eroteltuna.\n")
+        """Testataan palauttaako tyhjän yritettäessä laittaa huonoa syötettä."""
+        self.assertEqual(str(self.ref.filter_references("lol")),
+                         "[]")
 
 
     @patch("repositories.viite_repository.requests.get")
@@ -385,10 +388,8 @@ class TestReferenceManager(unittest.TestCase):
     @patch("repositories.viite_repository.requests.get")
     def test_fetch_reference_by_doi_request_exception(self, mock_get):
         """Testaa että DOI-haun HTTP-virhe palauttaa None"""
-        from repositories.viite_repository import ReferenceManager
 
         # Mockataan että requests.get heittää RequestException
-        from requests import RequestException
         mock_get.side_effect = RequestException("HTTP error")
 
         ref_manager = ReferenceManager("test.db")
@@ -398,7 +399,6 @@ class TestReferenceManager(unittest.TestCase):
     @patch("repositories.viite_repository.requests.get")
     def test_fetch_reference_by_doi_general_exception(self, mock_get):
         """Testaa että DOI-haun odottamaton virhe palauttaa None"""
-        from repositories.viite_repository import ReferenceManager
 
         # Mockataan että requests.get heittää yleisen exceptionin
         mock_get.side_effect = Exception("Unexpected error")
@@ -445,7 +445,6 @@ class TestReferenceManager(unittest.TestCase):
     @patch("repositories.viite_repository.requests.get")
     def test_fetch_reference_by_url_request_exception(self, mock_get):
         """URL-haku: jos requests.get kaatuu, palautetaan None."""
-        from requests import RequestException
         mock_get.side_effect = RequestException("HTTP error")
 
         ref = self.ref.fetch_reference_by_url("https://example.com/page")

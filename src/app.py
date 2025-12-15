@@ -14,7 +14,7 @@ class App:
             print("2) Listaa viitteet")
             print("3) Vie BibTeX-tiedosto")
             print("4) Muokkaa viitettä")
-            print("5) Poista viite")          
+            print("5) Poista viite")
             print("6) Lopeta\n")
 
 
@@ -37,7 +37,7 @@ class App:
             else:
                 print("Virheellinen valinta")
 
-     
+
     def add_reference_menu(self):
         """Alavalikko viitteen lisäämiseen"""
         print("\n=== Lisää uusi viite ===")
@@ -55,8 +55,8 @@ class App:
         elif value == "3":
             self.add_reference_by_url()
         else:
-            return    
-       
+            return
+
     def list_references(self):
         """Metodi viitteiden listaamiseen"""
         print("\n1) Listaa tagin perusteella")
@@ -178,7 +178,7 @@ class App:
             return "book"
         print("Virheellinen valinta")
         return None
-    
+
     def add_reference_by_doi(self):
         """Lisää viite DOI-tunnisteen avulla artikkeliksi"""
         doi = input("Anna DOI(esimerkiksi: doi.org/10.1080/10509585.2015.1092083): ").strip()
