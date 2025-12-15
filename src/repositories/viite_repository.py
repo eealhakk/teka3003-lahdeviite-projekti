@@ -28,9 +28,9 @@ class ReferenceManager:
         rows = self.db_manager.get_reference()
         return [self._row_to_reference(r) for r in rows]
 
-    def entry_info(self, ref_type=None, key=None):
+    def entry_info(self, key=None):
         """Hakee tietyn viitteen tiedot tietokannasta."""
-        row = self.db_manager.get_reference(key=key, ref_type=ref_type)
+        row = self.db_manager.get_reference(key=key)
         if not row:
             return None
         _, ref_obj = self._row_to_reference(row[0])
@@ -57,9 +57,9 @@ class ReferenceManager:
         """Muokkaa tietyn viitteen tietoja tietokannassa."""
         self.db_manager.edit_entry(entry_type, target_key, **kwargs)
 
-    def delete_entry(self, ref_type, target_key):
+    def delete_entry(self, target_key):
         """Poistaa tietyn viitteen tietokannassa."""
-        self.db_manager.delete_entry(target_key, ref_type)
+        self.db_manager.delete_entry(target_key)
 
     def add_entry(self, entry_type, key, other_elements = {}, tags=[]):
         """Lisää uuden viitteen tietokantaan."""

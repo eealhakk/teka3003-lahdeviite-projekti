@@ -272,14 +272,11 @@ class DatabaseManager:
         conn.close()
         return changed
 
-    def delete_entry(self, target_key, ref_type=None):
+    def delete_entry(self, target_key):
         """Poistaa tietokannan merkinnän ja siihen liitetyt tagit"""
         conn = self.connect()
         cur = conn.cursor()
-        if ref_type:
-            cur.execute('DELETE FROM reference WHERE key = ? AND type = ?;', (target_key, ref_type))
-        else:
-            cur.execute('DELETE FROM reference WHERE "key" = ?;', (target_key,))
+        cur.execute('DELETE FROM reference WHERE key = ?;', (target_key,))
         deleted = cur.rowcount > 0
         conn.commit()
         conn.close()
