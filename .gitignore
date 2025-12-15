@@ -4,6 +4,10 @@ __pycache__
 .pytest_cache
 .coverage
 htmlcov
+results
+log.html
+output.xml
+report.html
 .venv
 *.db
 teka3003-lahdeviite-projekti.code-workspace
