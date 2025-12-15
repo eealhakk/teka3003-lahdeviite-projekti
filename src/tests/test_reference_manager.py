@@ -172,7 +172,7 @@ class TestReferenceManager(unittest.TestCase):
 
     def test_delete_entry_finds_thing(self):
         """Testataan viite_repositoryn delete_entry-metodia niin että poistettava löytyy."""
-        self.ref.delete_entry("book", "Martin09")
+        self.ref.delete_entry("Martin09")
         testipaluuarvo = ''
         for reference in self.ref.listaa():
             reference_tags = self.ref.get_reference_tags(reference[0])
@@ -192,7 +192,7 @@ class TestReferenceManager(unittest.TestCase):
 
     def test_delete_entry_doesnt_find(self):
         """Testataan viite_repositoryn delete_entry-metodia että poistettava ei löydy."""
-        self.ref.delete_entry("book", "OhjTest")
+        self.ref.delete_entry("OhjTest")
         testipaluuarvo = ''
         for reference in self.ref.listaa():
             reference_tags = self.ref.get_reference_tags(reference[0])
@@ -247,7 +247,7 @@ class TestReferenceManager(unittest.TestCase):
 
     def test_entry_info_finds(self):
         """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia"""
-        self.assertEqual(str(self.ref.entry_info("book", "Martin09")),
+        self.assertEqual(str(self.ref.entry_info("Martin09")),
                          "Type: book\n" +
                         "Key: Martin09\n" +
                         "author: Martin, Robert\n" +
@@ -259,13 +259,13 @@ class TestReferenceManager(unittest.TestCase):
     def test_entry_info_doesnt_find_entry_type(self):
         """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia
         niin, ettei löydy haluttua kohdetta."""
-        self.assertEqual(str(self.ref.entry_info("inproceeding", "Martin09")), "None")
+        self.assertEqual(str(self.ref.entry_info("Martin99")), "None")
 
 
     def test_entry_info_doesnt_find_key(self):
         """Testataan viite_repositoryn yksittäisen kohteen tiedot palauttavaa entry_info-metodia
         niin, ettei löydy haluttua kohdetta."""
-        self.assertEqual(str(self.ref.entry_info("book", "CBH91")), "None")
+        self.assertEqual(str(self.ref.entry_info("CBH11")), "None")
 
 
     def test_get_references_by_tag(self):
