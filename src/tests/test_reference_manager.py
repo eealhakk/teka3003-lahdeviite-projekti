@@ -1,3 +1,4 @@
+# pylint: disable=too-many-public-methods
 """Testit ReferenceManager-luokalle"""
 import unittest
 import os

@@ -70,7 +70,7 @@ class ReferenceManager:
         entry = Reference(entry_type, key, other_elements)
         return self.db_manager.insert_reference(entry, tags)
 
-    def export_bibtex(self, filename): # pylint: disable=too-many-locals #TODO too many?
+    def export_bibtex(self, filename): # pylint: disable=too-many-locals
         """Vie kaikki viitteet BibTeX-tiedostoon."""
         references = self.db_manager.get_reference()
 
@@ -96,7 +96,7 @@ class ReferenceManager:
         except requests.RequestException as e:
             print(f"DOI-haku epäonnistui: {e}")
             return None
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-exception-caught
             print(f"Odottamaton virhe DOI-haussa: {e}")
             return None
 

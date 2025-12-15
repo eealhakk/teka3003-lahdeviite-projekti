@@ -3,39 +3,41 @@
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 import sqlite3
 import json
-from entities.refobj import Reference
+#from entities.refobj import Reference
 
-VPL11 = Reference(
-    ref_type="inproceeding",
-    key="VPL11",
-    other_fields={"author": "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
-                   "title": "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
-                   "year": 2011,
-                   "booktitle": ("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium "
-                                 "on Computer science education")}
-)
 
-CBH91 = Reference(
-    ref_type="article",
-    key="CBH91",
-    other_fields={"author": "Allan Collins and John Seely Brown and Ann Holum",
-                  "title": "Cognitive apprenticeship: making thinking visible",
-                  "journal": "American Educator",
-                  "year": 1991,
-                  "volume": 6,
-                  "pages": "38--46"}
-)
-
-MARTIN09 = Reference(
-    ref_type="book",
-    key="Martin09",
-    other_fields={"author": "Martin, Robert",
-                  "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
-                  "year": 2008,
-                  "publisher": "Prentice Hall"}
-)
-
-entries = [VPL11, CBH91, MARTIN09]
+#Sisäistä testidataa:
+#VPL11 = Reference(
+#    ref_type="inproceeding",
+#    key="VPL11",
+#    other_fields={"author": "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
+#                   "title": "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
+#                   "year": 2011,
+#                   "booktitle": ("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium "
+#                                 "on Computer science education")}
+#)
+#
+#CBH91 = Reference(
+#    ref_type="article",
+#    key="CBH91",
+#    other_fields={"author": "Allan Collins and John Seely Brown and Ann Holum",
+#                  "title": "Cognitive apprenticeship: making thinking visible",
+#                  "journal": "American Educator",
+#                  "year": 1991,
+#                  "volume": 6,
+#                  "pages": "38--46"}
+#)
+#
+#MARTIN09 = Reference(
+#    ref_type="book",
+#    key="Martin09",
+#    other_fields={"author": "Martin, Robert",
+#                  "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+#                  "year": 2008,
+#                  "publisher": "Prentice Hall"}
+#)
+#
+#entries = [VPL11, CBH91, MARTIN09]
 
 
 class DatabaseManager:
