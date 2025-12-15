@@ -108,10 +108,9 @@ class App:
 
     def edit_reference(self):
         """Metodi lähteen muokkaamiseen"""
-        ref_type = input("Anna muokattavan viitteen tyyppi: ").strip()
         key_editing = input("Anna muokattavan viitteen BibTeX-avain: ").strip()
 
-        ref_obj = self.reference_manager.entry_info(ref_type, key_editing)
+        ref_obj = self.reference_manager.entry_info(key_editing)
 
         if not ref_obj:
             print("Viitettä ei löydy.")
@@ -131,7 +130,7 @@ class App:
             new_value = input(f"Anna uusi arvo kentälle '{field}': ").strip()
             new_values[field] = new_value
 
-        self.reference_manager.edit_entry(ref_type, key_editing, **new_values)
+        self.reference_manager.edit_entry(ref_obj.ref_type, key_editing, **new_values)
         print("Viite päivitetty!")
 
     def add_reference(self):
