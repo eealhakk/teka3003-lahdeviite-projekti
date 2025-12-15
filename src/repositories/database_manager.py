@@ -225,6 +225,7 @@ class DatabaseManager:
 
 
     # muokkaus tietokannassa
+    # pylint: disable=too-many-locals
     def edit_entry(self, entry_type, target_key, **kwargs):
         """Muokkaa tietokannan merkintää."""
         conn = self.connect()
@@ -262,7 +263,7 @@ class DatabaseManager:
         if new_key is not None:
             update_cols["key"] = new_key
 
-        fields_sql = ", ".join([f'{col} = ?' for col in update_cols.keys()])
+        fields_sql = ", ".join(f'{col} = ?' for col in update_cols)
         values = list(update_cols.values()) + [target_key]
 
         cur.execute(f'UPDATE reference SET {fields_sql} WHERE "key" = ?;', values)

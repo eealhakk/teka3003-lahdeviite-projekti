@@ -61,8 +61,12 @@ class ReferenceManager:
         """Poistaa tietyn viitteen tietokannassa."""
         self.db_manager.delete_entry(target_key)
 
-    def add_entry(self, entry_type, key, other_elements = {}, tags=[]):
+    def add_entry(self, entry_type, key, other_elements = None, tags=None):
         """Lisää uuden viitteen tietokantaan."""
+        if other_elements is None:
+            other_elements = {}
+        if tags is None:
+            tags = []
         entry = Reference(entry_type, key, other_elements)
         return self.db_manager.insert_reference(entry, tags)
 
@@ -72,7 +76,7 @@ class ReferenceManager:
 
         with open(filename, "w", encoding="utf-8") as f:
             for row in references:
-                ref_id, ref_type, key, raw_fields = row
+                _, ref_type, key, raw_fields = row
 
                 fields = json.loads(raw_fields) if raw_fields else {}
 
@@ -128,7 +132,7 @@ class ReferenceManager:
             key=doi,
             other_fields=other_fields
         )
-    
+
     def fetch_reference_by_url(self, url):
         """Hakee URL:n ja yrittää löytää DOI:n sivulta."""
 

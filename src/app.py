@@ -54,8 +54,10 @@ class App:
             self.add_reference_by_doi()
         elif value == "3":
             self.add_reference_by_url()
-        else:
+        elif value == "4":
             return
+        else:
+            print("Virheellinen valinta")
 
     def list_references(self):
         """Metodi viitteiden listaamiseen"""
