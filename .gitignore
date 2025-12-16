@@ -13,3 +13,7 @@ report.html
 teka3003-lahdeviite-projekti.code-workspace
 test.db
 *.bib
+# PyInstaller
+dist/
+build/
+*.spec
