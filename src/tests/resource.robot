@@ -30,3 +30,7 @@ Verify Reference Not In Database
     [Arguments]    ${key}
     ${listing}=    Listaa
     Should Not Contain    ${listing}    ${key}
+
+Add Article By DOI To Database
+    [Arguments]    ${doi}    ${key}    ${tags}=None
+    Add Article By DOI    ${doi}    ${key}    ${tags}

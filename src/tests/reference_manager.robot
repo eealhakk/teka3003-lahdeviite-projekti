@@ -34,3 +34,6 @@ Export Book To BibTeX
     Bib File Should Exist
     Bib File Should Contain  @book{Martin09,
 
+Add Article By DOI And Verify
+    Add Article By DOI To Database    10.1080/10509585.2015.1092083    DOI1    DOI,testaus
+    Verify Reference In Database    DOI1

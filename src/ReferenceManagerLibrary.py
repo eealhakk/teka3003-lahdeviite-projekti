@@ -98,5 +98,30 @@ class ReferenceManagerLibrary:
         """Poistaa viitteen avaimen perusteella"""
         self.ref.delete_entry(key)
 
+    def add_article_by_doi(self, doi, key, tags=None):
+        """Lisää artikkelin DOI:lla (hakee Crossrefistä ja tallentaa)"""
+        if tags is None:
+            tags_list = []
+        elif isinstance(tags, str):
+            tags_list = [t.strip() for t in tags.split(",") if t.strip()]
+        else:
+            tags_list = list(tags)
+
+        ref = self.ref.fetch_reference_by_doi(doi)
+        if not ref:
+            raise AssertionError("DOI-haku epäonnistui")
+
+        fields = {
+            "author": ref.other_fields.get("author", "-"),
+            "title": ref.other_fields.get("title", "-"),
+            "journal": ref.other_fields.get("journal", "-"),
+            "year": ref.other_fields.get("year", 0),
+            "volume": ref.other_fields.get("volume", "-"),
+            "pages": ref.other_fields.get("pages", "-"),
+        }
+
+        ok = self.ref.add_entry("article", key, fields, tags_list)
+        if not ok:
+            raise AssertionError("Viitteen lisäys epäonnistui (avaimen pitäs olla uniikki)")
 
 
