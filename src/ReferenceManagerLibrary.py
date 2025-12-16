@@ -123,5 +123,3 @@ class ReferenceManagerLibrary:
         ok = self.ref.add_entry("article", key, fields, tags_list)
         if not ok:
             raise AssertionError("Viitteen lisäys epäonnistui (avaimen pitäs olla uniikki)")
-
-
