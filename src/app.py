@@ -1,5 +1,7 @@
 """App-moduuli ohjelman toiminnoille"""
 from repositories.viite_repository import ReferenceManager
+import json
+from entities.refobj import Reference
 
 class App:
     """App luokka, jossa ohjelman metodit"""
@@ -68,8 +70,20 @@ class App:
         value = input("Valinta: ").strip()
 
         if value == "1":
-            print(self.reference_manager.get_references_by_tag(
-                input("Anna tagi: ").strip()))
+            tag = input("Anna tagi: ").strip()
+            results = self.reference_manager.get_references_by_tag(tag)
+
+            if not results:
+                print("Ei löytyny viitteitä tälle tagille.")
+                return
+
+            for ref_id, ref_type, key, raw_fields in results:
+                fields = json.loads(raw_fields) if raw_fields else {}
+                ref_obj = Reference(ref_type, key, fields)
+
+                tags = self.reference_manager.get_reference_tags(ref_id)
+                print(f"---\n\n{ref_obj}\ntags: {tags}")
+
         elif value == "2":
             for reference in self.reference_manager.listaa():
                 reference_tags = self.reference_manager.get_reference_tags(reference[0])
