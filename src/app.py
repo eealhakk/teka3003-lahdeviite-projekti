@@ -1,6 +1,6 @@
 """App-moduuli ohjelman toiminnoille"""
-from repositories.viite_repository import ReferenceManager
 import json
+from repositories.viite_repository import ReferenceManager
 from entities.refobj import Reference
 
 class App:
