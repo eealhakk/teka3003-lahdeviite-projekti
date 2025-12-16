@@ -93,3 +93,10 @@ class ReferenceManagerLibrary:
             content = f.read()
         if text not in content:
             raise AssertionError(f"'{text}' not found in BibTeX file")
+
+    def delete_reference(self, key):
+        """Poistaa viitteen avaimen perusteella"""
+        self.ref.delete_entry(key)
+
+
+

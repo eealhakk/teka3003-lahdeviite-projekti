@@ -21,3 +21,12 @@ Verify Reference In Database
     [Arguments]    ${key}
     ${listing}=    Listaa
     Should Contain    ${listing}    ${key}
+
+Delete Reference From Database
+    [Arguments]    ${key}
+    Delete Reference    ${key}
+
+Verify Reference Not In Database
+    [Arguments]    ${key}
+    ${listing}=    Listaa
+    Should Not Contain    ${listing}    ${key}

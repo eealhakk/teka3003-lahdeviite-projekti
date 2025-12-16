@@ -22,6 +22,12 @@ List Shows Multiple References
 
     Verify Reference In Database  CBH91
 
+Delete Reference Flow
+    Add Book To Database    DEL1    Author X    Title X    2020    Pub X    tag1
+    Verify Reference In Database    DEL1
+    Delete Reference From Database    DEL1
+    Verify Reference Not In Database    DEL1
+
 Export Book To BibTeX
     Add Book    Martin09    Martin    Clean Code: A Handbook of Agile Software Craftsmanship    2008    Prentice Hall    Agile,Development
     Export Bibtex File
