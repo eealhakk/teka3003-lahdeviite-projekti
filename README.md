@@ -40,4 +40,4 @@ Structured Backlog:
 
 ### Miniprojektin raportti 📝
 
-[Raportti]([https://github.com/eealhakk/teka3003-lahdeviite-projekti/blob/main/retro.md](https://docs.google.com/document/d/1kbQ5w9bZ5LuAYiCisWec9NRzJLzvuw5oZyNvxWZIAXs/edit?tab=t.0))
+[Raportti](https://docs.google.com/document/d/1kbQ5w9bZ5LuAYiCisWec9NRzJLzvuw5oZyNvxWZIAXs/edit?tab=t.0)
